@@ -51,9 +51,10 @@ a:hover, a:focus-visible {
   text-decoration: underline;
 }
 
-/* Header */
+/* Header: no fijo, scroll con la página */
 .header {
-  position: relative;
+  position: relative !important;
+  top: auto !important;
   background: var(--negro);
   border-bottom: 1px solid rgba(201, 162, 39, 0.3);
   padding: 1rem;
@@ -1051,7 +1052,7 @@ input.input {
   .header {
     flex-direction: row;
     justify-content: center;
-    position: relative;
+    position: relative !important;
   }
   .header .nav {
     position: absolute;
