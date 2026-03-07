@@ -73,14 +73,22 @@
     return match ? match[1] : null;
   }
 
-  /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src> */
-  function urlImagenDrive(url) {
+  /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src>.
+   * Usamos thumbnail para evitar 403 cuando se carga desde otro sitio. size ej: w800, w1200 */
+  function urlImagenDrive(url, size) {
     if (!url || typeof url !== 'string') return url;
     var u = url.trim();
+    var id = null;
     var m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
-    m = u.match(/drive\.google\.com\/open\?id=([^&]+)/);
-    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    if (m) id = m[1];
+    else {
+      m = u.match(/drive\.google\.com\/open\?id=([^&]+)/);
+      if (m) id = m[1];
+    }
+    if (id) {
+      var sz = (size && String(size).match(/^[wm]\d+$/)) ? size : 'w1200';
+      return 'https://drive.google.com/thumbnail?id=' + id + '&sz=' + sz;
+    }
     return u;
   }
 
@@ -95,7 +103,7 @@
 
     var ubicacion = ubicacionTexto(p);
     var imagenes = p.imagenes && p.imagenes.length > 0 ? p.imagenes : (p.imagen ? [p.imagen] : []);
-    imagenes = imagenes.map(function (u) { return urlImagenDrive(u); });
+    imagenes = imagenes.map(function (u) { return urlImagenDrive(u, 'w1200'); });
     var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
     if (p.arriendoPorDia) tipoLabel += ' por día';
 

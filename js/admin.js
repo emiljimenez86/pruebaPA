@@ -32,14 +32,22 @@
     return div.innerHTML;
   }
 
-  /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src> */
-  function urlImagenDrive(url) {
+  /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src>.
+   * Usamos thumbnail para evitar 403 cuando se carga desde otro sitio. */
+  function urlImagenDrive(url, size) {
     if (!url || typeof url !== 'string') return url;
     var u = url.trim();
+    var id = null;
     var m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/);
-    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
-    m = u.match(/drive\.google\.com\/open\?id=([^&]+)/);
-    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    if (m) id = m[1];
+    else {
+      m = u.match(/drive\.google\.com\/open\?id=([^&]+)/);
+      if (m) id = m[1];
+    }
+    if (id) {
+      var sz = (size && String(size).match(/^[wm]\d+$/)) ? size : 'w400';
+      return 'https://drive.google.com/thumbnail?id=' + id + '&sz=' + sz;
+    }
     return u;
   }
 

@@ -1,16 +1,16 @@
-const CACHE_NAME = 'inmobiliaria-perez-araujo-v2';
+const CACHE_NAME = 'inmobiliaria-admin-v1';
 
 const APP_SHELL = [
-  './',
-  './index.html',
-  './publicar.html',
-  './css/styles.css',
-  './js/app.js',
-  './js/datos.js',
-  './js/publicar.js',
-  './js/pwa.js',
-  './js/firebase-app.js',
-  './image/logo/PerezAraujoLogo.png'
+  '/admin/',
+  '/admin/pnl-a8f3k2m9.html',
+  '/css/styles.css',
+  '/css/admin.css',
+  '/js/datos.js',
+  '/js/admin.js',
+  '/js/colombia-data.js',
+  '/js/PaisesBanderas-data.js',
+  '/js/firebase-app.js',
+  '/image/logo/PerezAraujoLogo.png'
 ];
 
 self.addEventListener('install', (event) => {
@@ -46,36 +46,30 @@ self.addEventListener('fetch', (event) => {
 
   const path = url.pathname || '';
 
-  /* Página principal y app.js: red primero, para ver nuevas publicaciones sin borrar caché */
-  if (request.mode === 'navigate' && (path === '/' || path === '/index.html' || path.endsWith('/'))) {
-    event.respondWith(
-      fetch(request)
-        .then((res) => res.ok ? res : caches.match('./index.html'))
-        .catch(() => caches.match('./index.html'))
-    );
+  /* Solo intervenir en rutas del panel (/admin/) */
+  if (!path.startsWith('/admin/')) {
     return;
   }
-  if (path === '/js/app.js' || path.endsWith('/js/app.js')) {
+
+  /* Página del panel: red primero para tener sesión actualizada */
+  if (request.mode === 'navigate' && (path === '/admin/' || path === '/admin/pnl-a8f3k2m9.html')) {
     event.respondWith(
       fetch(request)
-        .then((res) => (res.ok ? res : caches.match(request)))
-        .catch(() => caches.match(request))
+        .then((res) => res.ok ? res : caches.match('/admin/pnl-a8f3k2m9.html'))
+        .catch(() => caches.match('/admin/pnl-a8f3k2m9.html'))
     );
     return;
   }
 
   event.respondWith(
     caches.match(request).then((cached) => {
-      if (cached) {
-        return cached;
-      }
+      if (cached) return cached;
       return fetch(request).catch(() => {
-        if (request.mode === 'navigate') {
-          return caches.match('./index.html');
+        if (request.mode === 'navigate' && path.startsWith('/admin/')) {
+          return caches.match('/admin/pnl-a8f3k2m9.html');
         }
         return undefined;
       });
     })
   );
 });
-

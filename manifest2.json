@@ -1,0 +1,25 @@
+{
+  "name": "Administrador Pérez Araujo",
+  "short_name": "Administrador",
+  "description": "Panel de administración de Inmobiliaria Pérez Araujo.",
+  "start_url": "/admin/pnl-a8f3k2m9.html",
+  "scope": "/admin/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "icons": [
+    {
+      "src": "/image/logo/PerezAraujoLogo.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any maskable"
+    },
+    {
+      "src": "/image/logo/PerezAraujoLogo.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ]
+}
