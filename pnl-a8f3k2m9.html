@@ -135,6 +135,18 @@
     </main>
   </div>
 
+  <div class="ios-install-banner admin-ios-banner" id="admin-ios-banner" aria-hidden="true">
+    <div class="ios-install-banner__content">
+      <p class="ios-install-banner__title">Para instalar el panel de administración en tu iPhone:</p>
+      <ol class="ios-install-banner__steps">
+        <li>Toca el botón <span aria-hidden="true">Compartir ⬆️</span> en Safari.</li>
+        <li>Elige <strong>Añadir a pantalla de inicio</strong>.</li>
+        <li>Confirma tocando <strong>Añadir</strong>.</li>
+      </ol>
+    </div>
+    <button type="button" class="ios-install-banner__close" id="admin-ios-banner-close" aria-label="Cerrar">Cerrar</button>
+  </div>
+
   <button type="button" class="install-btn" id="admin-install-btn" aria-label="Instalar aplicación">Instalar app</button>
 
   <script src="js/datos.js"></script>
@@ -156,38 +168,57 @@
       }
 
       var adminInstallBtn = document.getElementById('admin-install-btn');
+      var iosBanner = document.getElementById('admin-ios-banner');
+      var iosBannerClose = document.getElementById('admin-ios-banner-close');
       var deferredPrompt = null;
-      var isAndroid = /android/i.test(navigator.userAgent || '');
+      var isIos = /iphone|ipad|ipod/i.test(navigator.userAgent || '');
       var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
 
-      if (adminInstallBtn && isStandalone) {
-        adminInstallBtn.style.display = 'none';
+      function hideIosBanner() {
+        if (iosBanner) {
+          iosBanner.classList.remove('ios-install-banner--show');
+          iosBanner.setAttribute('aria-hidden', 'true');
+        }
+      }
+
+      if (isStandalone) {
+        if (adminInstallBtn) adminInstallBtn.style.display = 'none';
+        hideIosBanner();
+      } else {
+        if (isIos) {
+          if (adminInstallBtn) adminInstallBtn.style.display = 'none';
+          if (iosBanner) {
+            iosBanner.classList.add('ios-install-banner--show');
+            iosBanner.setAttribute('aria-hidden', 'false');
+          }
+          if (iosBannerClose) iosBannerClose.addEventListener('click', hideIosBanner);
+        } else {
+          if (iosBanner) hideIosBanner();
+          if (adminInstallBtn) {
+            adminInstallBtn.style.display = '';
+            adminInstallBtn.addEventListener('click', function () {
+              if (deferredPrompt) {
+                adminInstallBtn.disabled = true;
+                deferredPrompt.prompt();
+                deferredPrompt.userChoice.then(function () {
+                  deferredPrompt = null;
+                  adminInstallBtn.disabled = false;
+                }).catch(function () {
+                  adminInstallBtn.disabled = false;
+                });
+              } else {
+                window.alert('Para instalar: menú del navegador (⋮) → Añadir a pantalla de inicio');
+              }
+            });
+          }
+        }
       }
 
       window.addEventListener('beforeinstallprompt', function (e) {
         e.preventDefault();
         deferredPrompt = e;
-        if (adminInstallBtn && !isStandalone) adminInstallBtn.style.display = '';
+        if (adminInstallBtn && !isStandalone && !isIos) adminInstallBtn.style.display = '';
       });
-
-      if (adminInstallBtn && !isStandalone) {
-        if (!isAndroid) adminInstallBtn.style.display = 'none';
-        else if (!deferredPrompt) adminInstallBtn.style.display = '';
-        adminInstallBtn.addEventListener('click', function () {
-          if (deferredPrompt) {
-            adminInstallBtn.disabled = true;
-            deferredPrompt.prompt();
-            deferredPrompt.userChoice.then(function () {
-              deferredPrompt = null;
-              adminInstallBtn.disabled = false;
-            }).catch(function () {
-              adminInstallBtn.disabled = false;
-            });
-          } else {
-            window.alert('Para instalar: menú del navegador → Añadir a pantalla de inicio');
-          }
-        });
-      }
     })();
   </script>
 </body>
