@@ -1,0 +1,159 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Pérez Araujo">
+  <title>Inmobiliaria Pérez Araujo | Venta y arriendo</title>
+  <link rel="icon" type="image/png" href="image/logo/PerezAraujoLogo.png">
+  <link rel="apple-touch-icon" sizes="180x180" href="image/logo/PerezAraujoLogo.png">
+  <link rel="manifest" href="manifest.json">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="css/styles.css">
+</head>
+<body>
+  <header class="header">
+    <a href="index.html" class="logo-link" aria-label="Inicio">
+      <img src="image/logo/PerezAraujoLogo.png" alt="Inmobiliaria Pérez Araujo" class="logo">
+    </a>
+    <nav class="nav" aria-label="Principal">
+      <a href="index.html">Inicio</a>
+      <a href="publicar.html">Publicar</a>
+      <a href="#quienes-somos">Quiénes somos</a>
+    </nav>
+  </header>
+
+  <main class="main">
+    <section class="hero">
+      <h1>Encuentra tu próximo hogar</h1>
+      <p>Venta y arriendo por ciudad y municipio</p>
+    </section>
+
+    <!-- Video YouTube (reproducir en la página). Para cambiar: sustituye el ID en src (ej: 8-34qjs46Js). -->
+    <section class="video-youtube" id="seccion-video" aria-label="Video">
+      <div class="video-youtube__wrap">
+        <iframe
+          src="https://www.youtube.com/embed/8-34qjs46Js?rel=0"
+          title="Video de Inmobiliaria Pérez Araujo"
+          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
+          allowfullscreen
+          class="video-youtube__iframe"
+        ></iframe>
+      </div>
+    </section>
+
+    <section class="buscar" aria-label="Buscar propiedades">
+      <h2>Buscar</h2>
+      <form class="filtros" id="form-filtros">
+        <label class="label" id="filtro-pais-label" for="filtro-pais-trigger">País</label>
+        <div class="filtro-pais-wrap" id="filtro-pais-wrap">
+          <input type="hidden" name="pais" id="filtro-pais" value="Colombia">
+          <button type="button" class="filtro-pais-trigger input" id="filtro-pais-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="filtro-pais-label">
+            <span class="filtro-pais-trigger-content" id="filtro-pais-trigger-content">
+              <img src="https://flagcdn.com/co.svg" alt="" class="filtro-pais-flag" width="24" height="18" aria-hidden="true">
+              <span>Colombia</span>
+            </span>
+          </button>
+          <div class="filtro-pais-list oculto" id="filtro-pais-list" role="listbox" aria-label="Seleccionar país"></div>
+        </div>
+        <div class="filtro-colombia-ubicacion" id="filtro-colombia-ubicacion">
+          <label class="label" for="filtro-ciudad">Departamento</label>
+          <select name="departamento" id="filtro-ciudad" class="input">
+            <option value="">Todos los departamentos</option>
+          </select>
+          <label class="label" for="filtro-municipio">Municipio</label>
+          <select name="municipio" id="filtro-municipio" class="input">
+            <option value="">Todos los municipios</option>
+          </select>
+        </div>
+        <label class="label">Tipo</label>
+        <select name="tipo" id="filtro-tipo" class="input">
+          <option value="">Venta o arriendo</option>
+          <option value="venta">Venta</option>
+          <option value="arriendo">Arriendo</option>
+        </select>
+        <button type="submit" class="btn btn-buscar">Buscar</button>
+      </form>
+    </section>
+
+    <section class="listado" aria-label="Propiedades">
+      <h2>Propiedades</h2>
+      <p class="resultados-info" id="resultados-info"></p>
+      <div class="grid-propiedades" id="grid-propiedades">
+        <!-- Se llena con JS -->
+      </div>
+      <div class="sin-resultados oculto" id="sin-resultados">
+        <p>No hay propiedades con esos filtros.</p>
+        <a href="publicar.html" class="btn">Publicar una propiedad</a>
+      </div>
+    </section>
+
+    <section class="quienes-somos" id="quienes-somos">
+      <h2>Quiénes somos</h2>
+      <p class="quienes-somos__texto">
+        Inmobiliaria Pérez Araujo es tu aliada en la búsqueda del hogar ideal. Nos especializamos en venta y arriendo de propiedades en Colombia, con atención personalizada y un equipo comprometido en ayudarte a encontrar la mejor opción o a publicar tu inmueble.
+      </p>
+      <p class="quienes-somos__cta">¿Tienes alguna consulta o quieres publicar una propiedad?</p>
+      <a href="#" class="btn" id="link-whatsapp-contacto" target="_blank" rel="noopener">Escríbenos por WhatsApp — 321 500 00 00</a>
+      <div class="quienes-somos__redes contacto-links">
+        <a href="https://instagram.com/Inmobiliaria_perezaraujo" target="_blank" rel="noopener" class="contacto-item" aria-label="Instagram">
+          <span class="icon" aria-hidden="true">📷</span>
+          <span>@Inmobiliaria_perezaraujo</span>
+        </a>
+        <a href="https://facebook.com/InmobiliariaPerezAraujo" target="_blank" rel="noopener" class="contacto-item" aria-label="Facebook">
+          <span class="icon" aria-hidden="true">f</span>
+          <span>Inmobiliaria Perez Araujo</span>
+        </a>
+        <a href="mailto:Inmobiliariaperezaraujo@gmail.com" class="contacto-item" aria-label="Correo">
+          <span class="icon" aria-hidden="true">✉</span>
+          <span>Inmobiliariaperezaraujo@gmail.com</span>
+        </a>
+        <a href="tel:+576046589505" class="contacto-item" aria-label="Teléfono">
+          <span class="icon" aria-hidden="true">📞</span>
+          <span>(604) 658 9505</span>
+        </a>
+      </div>
+    </section>
+  </main>
+
+  <div class="ios-install-banner" id="ios-install-banner" aria-hidden="true">
+    <div class="ios-install-banner__content">
+      <p class="ios-install-banner__title">Para instalar esta app en tu iPhone:</p>
+      <ol class="ios-install-banner__steps">
+        <li>Toca el botón <span aria-hidden="true">Compartir ⬆️</span> en Safari.</li>
+        <li>Elige <strong>Añadir a pantalla de inicio</strong>.</li>
+        <li>Confirma tocando <strong>Añadir</strong>.</li>
+      </ol>
+    </div>
+    <button type="button" class="ios-install-banner__close" data-ios-banner-close>Cerrar</button>
+  </div>
+
+  <button type="button" class="install-btn" id="install-btn" aria-label="Instalar aplicación">
+    Instalar app
+  </button>
+
+  <a href="#" class="fab-whatsapp" id="fab-whatsapp" aria-label="Consultar por WhatsApp">
+    <span aria-hidden="true">WhatsApp</span>
+  </a>
+
+  <footer class="footer">
+    <img src="image/logo/PerezAraujoLogo.png" alt="" class="footer-logo" width="160" height="80">
+    <p>© Inmobiliaria Pérez Araujo</p>
+  </footer>
+
+  <script src="js/datos.js"></script>
+  <script src="js/firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-app.js"></script>
+  <script src="js/colombia-data.js"></script>
+  <script src="js/PaisesBanderas-data.js"></script>
+  <script src="js/app.js"></script>
+  <script src="js/pwa.js"></script>
+</body>
+</html>

@@ -1,0 +1,132 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0a0a0a">
+  <meta name="robots" content="noindex, nofollow">
+  <title>Panel | Inmobiliaria</title>
+  <link rel="icon" type="image/png" href="image/logo/PerezAraujoLogo.png">
+  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/admin.css">
+</head>
+<body class="admin-body">
+  <div id="admin-login" class="admin-login">
+    <div class="admin-login__box">
+      <img src="image/logo/PerezAraujoLogo.png" alt="" class="admin-login__logo" width="120" height="60">
+      <h1 class="admin-login__titulo">Acceso restringido</h1>
+      <p class="admin-login__texto">Solo personal autorizado. Inicia sesión con tu cuenta de Firebase.</p>
+
+      <div id="login-firebase-aviso" class="admin-login__aviso oculto">
+        <p>Para usar el panel con publicación directa en la web, configura Firebase:</p>
+        <ol class="admin-login__pasos">
+          <li>Copia <code>js/firebase-config.example.js</code> como <code>js/firebase-config.js</code>.</li>
+          <li>Crea un proyecto en <a href="https://console.firebase.google.com" target="_blank" rel="noopener">Firebase</a>, activa Firestore y Authentication (Email/Password).</li>
+          <li>Pega en <code>firebase-config.js</code> la configuración de tu app web.</li>
+          <li>Crea un usuario en Authentication → Users y usa ese correo y contraseña aquí.</li>
+        </ol>
+      </div>
+
+      <form id="form-login" class="admin-login__form oculto">
+        <label class="label" for="admin-email">Correo</label>
+        <input type="email" id="admin-email" class="input" placeholder="correo@ejemplo.com" required autocomplete="email">
+        <label class="label" for="admin-password">Contraseña</label>
+        <input type="password" id="admin-password" class="input" placeholder="Contraseña" required autocomplete="current-password">
+        <button type="submit" class="btn">Entrar</button>
+      </form>
+      <p id="login-error" class="admin-login__error oculto"></p>
+    </div>
+  </div>
+
+  <div id="admin-panel" class="admin-panel oculto">
+    <header class="admin-header">
+      <img src="image/logo/PerezAraujoLogo.png" alt="Pérez Araujo" class="admin-header__logo" width="100" height="50">
+      <div class="admin-header__links">
+        <a href="index.html" target="_blank" rel="noopener" class="btn btn--sec">Ver web</a>
+        <button type="button" id="admin-cerrar" class="btn btn--sec">Cerrar sesión</button>
+      </div>
+    </header>
+
+    <main class="admin-main">
+      <section class="admin-section">
+        <h2>Publicar nueva propiedad</h2>
+        <p class="admin-info">Los clientes envían el formulario por WhatsApp; tú subes aquí la información, imágenes y videos.</p>
+        <form id="form-nueva-propiedad" class="admin-form">
+          <label class="label" for="adm-titulo">Título *</label>
+          <input type="text" id="adm-titulo" name="titulo" class="input" placeholder="Ej: Casa 3 habitaciones con jardín" required>
+
+          <label class="label" for="adm-tipo">Tipo *</label>
+          <select id="adm-tipo" name="tipo" class="input" required>
+            <option value="">Seleccione</option>
+            <option value="venta">Venta</option>
+            <option value="arriendo">Arriendo</option>
+          </select>
+
+          <label class="label" id="adm-pais-label">País *</label>
+          <div class="filtro-pais-wrap admin-pais-wrap" id="adm-pais-wrap">
+            <input type="hidden" name="pais" id="adm-pais" value="Colombia">
+            <button type="button" class="filtro-pais-trigger input" id="adm-pais-trigger" aria-haspopup="listbox" aria-expanded="false">
+              <span class="filtro-pais-trigger-content" id="adm-pais-trigger-content">
+                <img src="https://flagcdn.com/co.svg" alt="" class="filtro-pais-flag" width="24" height="18" aria-hidden="true">
+                <span>Colombia</span>
+              </span>
+            </button>
+            <div class="filtro-pais-list oculto" id="adm-pais-list" role="listbox"></div>
+          </div>
+
+          <div class="admin-colombia-ubicacion" id="adm-colombia-ubicacion">
+            <label class="label" for="adm-departamento">Departamento *</label>
+            <select id="adm-departamento" name="departamento" class="input">
+              <option value="">Seleccione</option>
+            </select>
+            <label class="label" for="adm-municipio">Municipio *</label>
+            <select id="adm-municipio" name="municipio" class="input">
+              <option value="">Seleccione</option>
+            </select>
+          </div>
+
+          <label class="label" for="adm-precio">Precio</label>
+          <input type="text" id="adm-precio" name="precio" class="input" placeholder="Ej: $ 180.000.000 o $ 1.200.000 / mes">
+
+          <label class="label" for="adm-descripcion">Descripción *</label>
+          <textarea id="adm-descripcion" name="descripcion" class="input input-area" rows="3" placeholder="Breve descripción de la propiedad..." required></textarea>
+
+          <label class="label" for="adm-imagenes">URLs de imágenes</label>
+          <textarea id="adm-imagenes" name="imagenes" class="input input-area" rows="3" placeholder="Una URL por línea (Imgur, Google Photos, o «Copiar dirección de imagen» desde redes)."></textarea>
+          <p class="admin-hint">Una URL por línea. La primera es la imagen principal.</p>
+
+          <label class="label" for="adm-video">URL de video (YouTube)</label>
+          <input type="url" id="adm-video" name="video" class="input" placeholder="Ej: https://youtu.be/abc123">
+
+          <button type="submit" class="btn btn-enviar">Añadir propiedad</button>
+        </form>
+      </section>
+
+      <section class="admin-section">
+        <h2>Propiedades publicadas</h2>
+        <p class="admin-info">Con Firebase configurado, los cambios se ven en la web al instante. También puedes exportar a <code>js/datos.js</code> como respaldo.</p>
+        <div class="admin-actions">
+          <button type="button" id="btn-exportar" class="btn">Copiar datos para datos.js</button>
+        </div>
+        <div id="admin-listado" class="admin-listado"></div>
+        <div id="admin-exportar-box" class="admin-exportar oculto">
+          <label class="label">Contenido para pegar en js/datos.js</label>
+          <textarea id="admin-exportar-text" class="input input-area" rows="12" readonly></textarea>
+          <p class="admin-hint">Copia todo, abre js/datos.js y reemplaza todo el archivo. Guarda y actualiza la web.</p>
+        </div>
+      </section>
+    </main>
+  </div>
+
+  <script src="js/datos.js"></script>
+  <script src="js/colombia-data.js"></script>
+  <script src="js/PaisesBanderas-data.js"></script>
+  <!-- Firebase: opcional. Copia firebase-config.example.js a firebase-config.js y rellena tu proyecto. -->
+  <script src="js/firebase-config.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-auth-compat.js"></script>
+  <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
+  <script src="js/firebase-app.js"></script>
+  <script src="js/admin.js"></script>
+</body>
+</html>
