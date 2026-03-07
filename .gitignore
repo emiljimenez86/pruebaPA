@@ -1,0 +1,4 @@
+# Configuración de Firebase (contiene datos de tu proyecto).
+# Para GitHub Pages: sácalo de .gitignore y haz commit para que la web cargue propiedades desde Firestore.
+# La config web es pública; la seguridad está en las reglas de Firestore.
+# js/firebase-config.js
