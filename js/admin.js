@@ -267,7 +267,7 @@
       var div = document.createElement('div');
       div.className = 'admin-item';
       var id = p.id != null ? String(p.id) : String(index);
-      var img = p.imagen ? '<img src="' + urlImagenDrive(p.imagen).replace(/"/g, '&quot;') + '" alt="" class="admin-item__img">' : '<span class="admin-item__sin-img">Sin imagen</span>';
+      var img = p.imagen ? '<img src="' + urlImagenDrive(p.imagen).replace(/"/g, '&quot;') + '" alt="" class="admin-item__img" referrerpolicy="no-referrer">' : '<span class="admin-item__sin-img">Sin imagen</span>';
       var pais = p.pais != null ? p.pais : 'Colombia';
       div.innerHTML =
         '<div class="admin-item__preview">' + img + '</div>' +

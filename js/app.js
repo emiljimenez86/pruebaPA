@@ -26,6 +26,15 @@
     return u;
   }
 
+  /** URL alternativa de Drive (uc?export=view) para usar como fallback si thumbnail falla en algún dispositivo */
+  function urlImagenDriveUc(url) {
+    if (!url || typeof url !== 'string') return '';
+    var u = url.trim();
+    var m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/) || u.match(/drive\.google\.com\/open\?id=([^&]+)/);
+    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    return '';
+  }
+
   function initVideoYoutube() {
     var section = document.getElementById('seccion-video');
     var iframe = document.getElementById('iframe-youtube');
@@ -107,6 +116,7 @@
     var ubicacion = ubicacionTexto(p);
     var primeraImg = (p.imagenes && p.imagenes[0]) || p.imagen;
     primeraImg = urlImagenDrive(primeraImg);
+    var primeraImgFallback = urlImagenDriveUc((p.imagenes && p.imagenes[0]) || p.imagen);
     var numFotos = (p.imagenes && p.imagenes.length) || (p.imagen ? 1 : 0);
 
     var div = document.createElement('article');
@@ -116,10 +126,11 @@
 
     var imagenHtml;
     if (primeraImg) {
+      var fallbackAttr = primeraImgFallback ? ' data-fallback="' + escapeAttr(primeraImgFallback) + '"' : '';
       imagenHtml =
         '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-imagen-link">' +
           '<div class="tarjeta-imagen">' +
-            '<img src="' + escapeAttr(primeraImg) + '" alt="' + escapeHtml(p.titulo) + '">' +
+            '<img src="' + escapeAttr(primeraImg) + '" alt="' + escapeHtml(p.titulo) + '" referrerpolicy="no-referrer" loading="lazy"' + fallbackAttr + '>' +
             (numFotos > 1 ? '<span class="tarjeta-n-fotos">+' + (numFotos - 1) + ' fotos</span>' : '') +
           '</div>' +
         '</a>';
@@ -204,6 +215,18 @@
     propiedades.forEach(function (p) {
       grid.appendChild(renderTarjeta(p));
     });
+
+    if (!grid._imgFallbackDelegation) {
+      grid._imgFallbackDelegation = true;
+      grid.addEventListener('error', function (e) {
+        var img = e.target;
+        if (img && img.tagName === 'IMG' && img.dataset && img.dataset.fallback) {
+          img.src = img.dataset.fallback;
+          img.removeAttribute('data-fallback');
+          img.onerror = null;
+        }
+      }, true);
+    }
 
     if (!grid._whatsappPorDiaDelegation) {
       grid._whatsappPorDiaDelegation = true;

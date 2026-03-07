@@ -297,3 +297,12 @@
 .btn--danger:hover {
   background: rgba(231, 76, 60, 0.35);
 }
+
+/* Botón Instalar app en el panel: siempre visible (salvo que el script añada .oculto) */
+.admin-body #admin-install-btn {
+  display: flex !important;
+  z-index: 50;
+}
+.admin-body #admin-install-btn.oculto {
+  display: none !important;
+}

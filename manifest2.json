@@ -1,6 +1,7 @@
 {
   "name": "Administrador Pérez Araujo",
   "short_name": "Administrador",
+  "id": "/admin/",
   "description": "Panel de administración de Inmobiliaria Pérez Araujo.",
   "start_url": "/admin/pnl-a8f3k2m9.html",
   "scope": "/admin/",

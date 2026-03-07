@@ -92,6 +92,13 @@
     return u;
   }
 
+  /** Si la thumbnail de Drive falla, probar uc?export=view (en algunos dispositivos funciona mejor) */
+  function driveThumbToUc(src) {
+    if (!src || src.indexOf('drive.google.com/thumbnail') === -1) return '';
+    var m = src.match(/[?&]id=([^&]+)/);
+    return m ? 'https://drive.google.com/uc?export=view&id=' + m[1] : '';
+  }
+
   function renderDetalle(p) {
     var main = document.getElementById('detalle-propiedad');
     var cargando = document.getElementById('detalle-cargando');
@@ -111,7 +118,7 @@
     if (imagenes.length > 0) {
       galeriaHtml = '<div class="detalle-galeria" role="region" aria-label="Galería de fotos">' +
         '<div class="detalle-galeria__principal">' +
-          '<img class="detalle-galeria__img" id="detalle-galeria-img" src="' + escapeAttr(imagenes[0]) + '" alt="' + escapeHtml(p.titulo) + '" title="Toca para ver más grande">' +
+          '<img class="detalle-galeria__img" id="detalle-galeria-img" src="' + escapeAttr(imagenes[0]) + '" alt="' + escapeHtml(p.titulo) + '" title="Toca para ver más grande" referrerpolicy="no-referrer">' +
           (imagenes.length > 1 ? (
             '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--prev" id="galeria-prev" aria-label="Foto anterior">‹</button>' +
             '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--next" id="galeria-next" aria-label="Siguiente foto">›</button>' +
@@ -147,7 +154,7 @@
         '<div id="detalle-lightbox" class="detalle-lightbox oculto" aria-hidden="true">' +
           '<button type="button" class="detalle-lightbox__cerrar" id="lightbox-cerrar" aria-label="Cerrar">×</button>' +
           (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__prev" id="lightbox-prev" aria-label="Anterior">‹</button>' : '') +
-          '<img class="detalle-lightbox__img" id="lightbox-img" src="" alt="">' +
+          '<img class="detalle-lightbox__img" id="lightbox-img" src="" alt="" referrerpolicy="no-referrer">' +
           (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__next" id="lightbox-next" aria-label="Siguiente">›</button>' : '') +
         '</div>' +
         '<div class="detalle-info">' +
@@ -209,6 +216,13 @@
     var lightboxCerrar = document.getElementById('lightbox-cerrar');
     var lightboxPrev = document.getElementById('lightbox-prev');
     var lightboxNext = document.getElementById('lightbox-next');
+    if (lightboxImg) {
+      lightboxImg.referrerPolicy = 'no-referrer';
+      lightboxImg.onerror = function () {
+        var uc = driveThumbToUc(lightboxImg.src);
+        if (uc) { lightboxImg.src = uc; lightboxImg.onerror = null; }
+      };
+    }
     if (galleryImg && lightbox && lightboxImg) {
       var lightboxIdx = 0;
       function openLightbox() {

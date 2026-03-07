@@ -1,6 +1,7 @@
 {
   "name": "Inmobiliaria Pérez Araujo",
   "short_name": "Pérez Araujo",
+  "id": "/",
   "description": "Venta y arriendo de inmuebles por ciudad y municipio.",
   "start_url": "./index.html",
   "scope": "./",
