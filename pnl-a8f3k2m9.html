@@ -158,14 +158,19 @@
       var adminInstallBtn = document.getElementById('admin-install-btn');
       var deferredPrompt = null;
       var isAndroid = /android/i.test(navigator.userAgent || '');
+      var isStandalone = window.matchMedia('(display-mode: standalone)').matches || window.navigator.standalone === true;
+
+      if (adminInstallBtn && isStandalone) {
+        adminInstallBtn.style.display = 'none';
+      }
 
       window.addEventListener('beforeinstallprompt', function (e) {
         e.preventDefault();
         deferredPrompt = e;
-        if (adminInstallBtn) adminInstallBtn.style.display = '';
+        if (adminInstallBtn && !isStandalone) adminInstallBtn.style.display = '';
       });
 
-      if (adminInstallBtn) {
+      if (adminInstallBtn && !isStandalone) {
         if (!isAndroid) adminInstallBtn.style.display = 'none';
         else if (!deferredPrompt) adminInstallBtn.style.display = '';
         adminInstallBtn.addEventListener('click', function () {

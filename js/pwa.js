@@ -27,6 +27,12 @@
     var installBtn = document.getElementById('install-btn');
     if (!installBtn) return;
 
+    /* Si ya está instalada (abierta como app), no mostrar el botón */
+    if (isStandalone()) {
+      installBtn.style.display = 'none';
+      return;
+    }
+
     window.addEventListener('beforeinstallprompt', function (event) {
       event.preventDefault();
       deferredPrompt = event;
@@ -71,6 +77,7 @@
       });
     }
 
+    /* Ocultar si no es iOS o si ya está instalada (abierta como app) */
     if (!isIos() || isStandalone()) {
       hide();
       return;
