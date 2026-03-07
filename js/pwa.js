@@ -25,31 +25,34 @@
 
   function setupBeforeInstallPrompt() {
     var installBtn = document.getElementById('install-btn');
+    if (!installBtn) return;
 
     window.addEventListener('beforeinstallprompt', function (event) {
       event.preventDefault();
       deferredPrompt = event;
+      installBtn.style.display = '';
     });
 
-    if (installBtn) {
-      installBtn.addEventListener('click', function () {
-        if (deferredPrompt) {
-          installBtn.disabled = true;
-          deferredPrompt.prompt();
-          deferredPrompt.userChoice.finally(function () {
-            deferredPrompt = null;
-            installBtn.disabled = false;
-          });
+    installBtn.addEventListener('click', function () {
+      if (deferredPrompt) {
+        installBtn.disabled = true;
+        deferredPrompt.prompt();
+        deferredPrompt.userChoice.finally(function () {
+          deferredPrompt = null;
+          installBtn.disabled = false;
+        });
+      } else {
+        var isAndroid = /android/i.test(window.navigator.userAgent || '');
+        if (isAndroid) {
+          window.alert('No se puede usar el instalador automático aquí.\n\nPara añadir al inicio: menú del navegador (⋮) → «Añadir a pantalla de inicio» o «Instalar aplicación».');
         } else {
-          // Fallback cuando no hay evento (por ejemplo file://)
-          try {
-            window.alert('Para instalar esta app abre esta página desde Chrome en Android con conexión segura (http o https).');
-          } catch (_) {
-            // ignore
-          }
+          window.alert('Instalación disponible en Chrome para Android. En este dispositivo usa la web en el navegador.');
         }
-      });
-    }
+      }
+    });
+
+    /* Ocultar botón hasta que beforeinstallprompt dispare (igual que en el panel) */
+    installBtn.style.display = 'none';
   }
 
   function setupIosBanner() {
