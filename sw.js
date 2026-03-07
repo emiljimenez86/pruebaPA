@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inmobiliaria-perez-araujo-v1';
+const CACHE_NAME = 'inmobiliaria-perez-araujo-v2';
 
 const APP_SHELL = [
   './',
@@ -47,6 +47,26 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
+  const path = url.pathname || '';
+
+  /* Página principal y app.js: red primero, para ver nuevas publicaciones sin borrar caché */
+  if (request.mode === 'navigate' && (path === '/' || path === '/index.html' || path.endsWith('/'))) {
+    event.respondWith(
+      fetch(request)
+        .then((res) => res.ok ? res : caches.match('./index.html'))
+        .catch(() => caches.match('./index.html'))
+    );
+    return;
+  }
+  if (path === '/js/app.js' || path.endsWith('/js/app.js')) {
+    event.respondWith(
+      fetch(request)
+        .then((res) => (res.ok ? res : caches.match(request)))
+        .catch(() => caches.match(request))
+    );
+    return;
+  }
+
   event.respondWith(
     caches.match(request).then((cached) => {
       if (cached) {
@@ -54,7 +74,6 @@ self.addEventListener('fetch', (event) => {
       }
       return fetch(request).catch(() => {
         if (request.mode === 'navigate') {
-          const path = new URL(request.url).pathname || '';
           if (path.includes('pnl-a8f3k2m9')) {
             return caches.match('./pnl-a8f3k2m9.html');
           }

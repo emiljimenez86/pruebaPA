@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var WHATSAPP_NUMERO = '573215000000';
+  var WHATSAPP_NUMERO = '573145000000';
 
   function getWhatsAppUrl(mensaje) {
     return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(mensaje);
@@ -91,7 +91,7 @@
     if (imagenes.length > 0) {
       galeriaHtml = '<div class="detalle-galeria" role="region" aria-label="Galería de fotos">' +
         '<div class="detalle-galeria__principal">' +
-          '<img class="detalle-galeria__img" id="detalle-galeria-img" src="' + escapeAttr(imagenes[0]) + '" alt="' + escapeHtml(p.titulo) + '">' +
+          '<img class="detalle-galeria__img" id="detalle-galeria-img" src="' + escapeAttr(imagenes[0]) + '" alt="' + escapeHtml(p.titulo) + '" title="Toca para ver más grande">' +
           (imagenes.length > 1 ? (
             '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--prev" id="galeria-prev" aria-label="Foto anterior">‹</button>' +
             '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--next" id="galeria-next" aria-label="Siguiente foto">›</button>' +
@@ -124,6 +124,12 @@
       '<div class="detalle-wrap">' +
         '<a href="index.html" class="detalle-volver">← Volver al listado</a>' +
         galeriaHtml +
+        '<div id="detalle-lightbox" class="detalle-lightbox oculto" aria-hidden="true">' +
+          '<button type="button" class="detalle-lightbox__cerrar" id="lightbox-cerrar" aria-label="Cerrar">×</button>' +
+          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__prev" id="lightbox-prev" aria-label="Anterior">‹</button>' : '') +
+          '<img class="detalle-lightbox__img" id="lightbox-img" src="" alt="">' +
+          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__next" id="lightbox-next" aria-label="Siguiente">›</button>' : '') +
+        '</div>' +
         '<div class="detalle-info">' +
           '<span class="detalle-tipo">' + escapeHtml(tipoLabel) + '</span>' +
           '<h1 class="detalle-titulo">' + escapeHtml(p.titulo) + '</h1>' +
@@ -174,6 +180,57 @@
           actualizarGaleria();
         });
       });
+    }
+
+    /* Lightbox: tocar imagen para ver a pantalla completa */
+    var galleryImg = document.getElementById('detalle-galeria-img');
+    var lightbox = document.getElementById('detalle-lightbox');
+    var lightboxImg = document.getElementById('lightbox-img');
+    var lightboxCerrar = document.getElementById('lightbox-cerrar');
+    var lightboxPrev = document.getElementById('lightbox-prev');
+    var lightboxNext = document.getElementById('lightbox-next');
+    if (galleryImg && lightbox && lightboxImg) {
+      var lightboxIdx = 0;
+      function openLightbox() {
+        var src = galleryImg.src;
+        for (var i = 0; i < imagenes.length; i++) {
+          if (imagenes[i] === src || src.indexOf(imagenes[i]) !== -1) {
+            lightboxIdx = i;
+            break;
+          }
+        }
+        lightboxImg.src = imagenes[lightboxIdx] || src;
+        lightbox.classList.remove('oculto');
+        lightbox.setAttribute('aria-hidden', 'false');
+        if (lightboxPrev) lightboxPrev.classList.toggle('oculto', imagenes.length <= 1);
+        if (lightboxNext) lightboxNext.classList.toggle('oculto', imagenes.length <= 1);
+      }
+      function closeLightbox() {
+        lightbox.classList.add('oculto');
+        lightbox.setAttribute('aria-hidden', 'true');
+      }
+      galleryImg.addEventListener('click', openLightbox);
+      if (lightboxCerrar) lightboxCerrar.addEventListener('click', closeLightbox);
+      lightbox.addEventListener('click', function (e) {
+        if (e.target === lightbox) closeLightbox();
+      });
+      document.addEventListener('keydown', function onKey(e) {
+        if (e.key === 'Escape' && !lightbox.classList.contains('oculto')) {
+          closeLightbox();
+        }
+      });
+      if (imagenes.length > 1 && lightboxPrev && lightboxNext) {
+        lightboxPrev.addEventListener('click', function (e) {
+          e.stopPropagation();
+          lightboxIdx = (lightboxIdx - 1 + imagenes.length) % imagenes.length;
+          lightboxImg.src = imagenes[lightboxIdx];
+        });
+        lightboxNext.addEventListener('click', function (e) {
+          e.stopPropagation();
+          lightboxIdx = (lightboxIdx + 1) % imagenes.length;
+          lightboxImg.src = imagenes[lightboxIdx];
+        });
+      }
     }
   }
 

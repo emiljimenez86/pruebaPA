@@ -80,6 +80,21 @@
       });
     }
 
+    var passwordToggle = document.getElementById('admin-password-toggle');
+    var passwordInput = document.getElementById('admin-password');
+    if (passwordToggle && passwordInput) {
+      var iconShow = passwordToggle.querySelector('.admin-login__password-icon--show');
+      var iconHide = passwordToggle.querySelector('.admin-login__password-icon--hide');
+      passwordToggle.addEventListener('click', function () {
+        var isPassword = passwordInput.type === 'password';
+        passwordInput.type = isPassword ? 'text' : 'password';
+        passwordToggle.setAttribute('aria-label', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        passwordToggle.setAttribute('title', isPassword ? 'Ocultar contraseña' : 'Mostrar contraseña');
+        if (iconShow) iconShow.classList.toggle('oculto', isPassword);
+        if (iconHide) iconHide.classList.toggle('oculto', !isPassword);
+      });
+    }
+
     var btnCerrar = document.getElementById('admin-cerrar');
     if (btnCerrar) {
       btnCerrar.addEventListener('click', function () {
@@ -242,6 +257,7 @@
           pais + (p.ciudad ? ', ' + p.ciudad : '') + (p.municipio ? ', ' + p.municipio : '') + (p.precio ? ' · ' + p.precio : '') +
           (p.video ? ' <span class="admin-item__video">🎬 Video</span>' : '') +
         '</div>' +
+        '<button type="button" class="btn btn--sec admin-item__edit" data-id="' + escapeHtml(id) + '" data-index="' + index + '">Editar</button>' +
         '<button type="button" class="btn btn--danger admin-item__del" data-id="' + escapeHtml(id) + '">Eliminar</button>';
       listadoEl.appendChild(div);
     });
@@ -265,6 +281,97 @@
       arr.splice(idx, 1);
       renderListado();
     }
+  }
+
+  function abrirEdicion(p) {
+    var tituloEl = document.getElementById('adm-titulo');
+    var tipoEl = document.getElementById('adm-tipo');
+    var paisInput = document.getElementById('adm-pais');
+    var triggerContent = document.getElementById('adm-pais-trigger-content');
+    var dptoEl = document.getElementById('adm-departamento');
+    var munEl = document.getElementById('adm-municipio');
+    var precioEl = document.getElementById('adm-precio');
+    var descEl = document.getElementById('adm-descripcion');
+    var imagenesEl = document.getElementById('adm-imagenes');
+    var videoEl = document.getElementById('adm-video');
+    var arriendoPorDiaCheck = document.getElementById('adm-arriendo-por-dia');
+    var submitBtn = document.getElementById('adm-btn-submit');
+    var cancelBtn = document.getElementById('adm-btn-cancelar-edicion');
+    if (!tituloEl || !tipoEl) return;
+
+    tituloEl.value = p.titulo || '';
+    tipoEl.value = p.tipo || 'venta';
+    paisInput.value = p.pais != null ? p.pais : 'Colombia';
+
+    var paises = window.PAISES_BANDERAS || [];
+    var paisObj = paises.filter(function (x) { return x.country === (p.pais != null ? p.pais : 'Colombia'); })[0];
+    if (triggerContent && paisObj) {
+      triggerContent.innerHTML = '<img src="' + (paisObj.flag || '').replace(/"/g, '&quot;') + '" alt="" class="filtro-pais-flag" width="24" height="18" aria-hidden="true"><span>' + escapeHtml(paisObj.country) + '</span>';
+    }
+
+    var blockColombia = document.getElementById('adm-colombia-ubicacion');
+    if (blockColombia && (p.pais === 'Colombia' || !p.pais)) {
+      blockColombia.classList.remove('oculto');
+      var mapa = window.CO_DEPARTAMENTOS;
+      if (mapa && dptoEl && munEl) {
+        var deptos = Object.keys(mapa).sort();
+        dptoEl.innerHTML = '<option value="">Seleccione</option>';
+        deptos.forEach(function (d) {
+          var opt = document.createElement('option');
+          opt.value = d;
+          opt.textContent = d;
+          dptoEl.appendChild(opt);
+        });
+        dptoEl.value = p.ciudad || '';
+        var muns = (p.ciudad && mapa[p.ciudad]) ? mapa[p.ciudad] : [];
+        munEl.innerHTML = '<option value="">Seleccione</option>';
+        muns.forEach(function (m) {
+          var opt = document.createElement('option');
+          opt.value = m;
+          opt.textContent = m;
+          munEl.appendChild(opt);
+        });
+        munEl.value = p.municipio || '';
+      }
+    } else if (blockColombia) {
+      blockColombia.classList.add('oculto');
+    }
+
+    precioEl.value = p.precio || '';
+    descEl.value = p.descripcion || '';
+    imagenesEl.value = (p.imagenes && Array.isArray(p.imagenes)) ? p.imagenes.join('\n') : (p.imagen ? p.imagen : '');
+    videoEl.value = p.video || '';
+    if (arriendoPorDiaCheck) arriendoPorDiaCheck.checked = !!(p.tipo === 'arriendo' && p.arriendoPorDia);
+
+    var arriendoWrap = document.getElementById('adm-arriendo-por-dia-wrap');
+    if (tipoEl.value === 'arriendo' && arriendoWrap) arriendoWrap.classList.remove('oculto');
+
+    window._adminEditingId = p.id;
+    if (submitBtn) submitBtn.textContent = 'Guardar cambios';
+    if (cancelBtn) cancelBtn.classList.remove('oculto');
+    if (tituloEl) tituloEl.focus();
+  }
+
+  function cancelarEdicion() {
+    window._adminEditingId = null;
+    var submitBtn = document.getElementById('adm-btn-submit');
+    var cancelBtn = document.getElementById('adm-btn-cancelar-edicion');
+    if (formNueva) formNueva.reset();
+    var paisInput = document.getElementById('adm-pais');
+    if (paisInput) paisInput.value = 'Colombia';
+    var colombia = (window.PAISES_BANDERAS || []).filter(function (x) { return x.country === 'Colombia'; })[0];
+    var tc = document.getElementById('adm-pais-trigger-content');
+    if (tc && colombia) tc.innerHTML = '<img src="' + (colombia.flag || '').replace(/"/g, '&quot;') + '" alt="" class="filtro-pais-flag" width="24" height="18" aria-hidden="true"><span>Colombia</span>';
+    var dpto = document.getElementById('adm-departamento');
+    var mun = document.getElementById('adm-municipio');
+    if (dpto) dpto.value = '';
+    if (mun) mun.innerHTML = '<option value="">Seleccione</option>';
+    var wrap = document.getElementById('adm-arriendo-por-dia-wrap');
+    var check = document.getElementById('adm-arriendo-por-dia');
+    if (wrap) wrap.classList.add('oculto');
+    if (check) check.checked = false;
+    if (submitBtn) submitBtn.textContent = 'Añadir propiedad';
+    if (cancelBtn) cancelBtn.classList.add('oculto');
   }
 
   function initPanel() {
@@ -326,6 +433,14 @@
           var id = btn.getAttribute('data-id');
           if (id != null) borrarPorId(id);
         }
+        if (btn && btn.classList && btn.classList.contains('admin-item__edit')) {
+          e.preventDefault();
+          e.stopPropagation();
+          var idx = btn.getAttribute('data-index');
+          var arr = getPropiedades();
+          var p = idx != null && arr[parseInt(idx, 10)] ? arr[parseInt(idx, 10)] : null;
+          if (p) abrirEdicion(p);
+        }
       });
     }
 
@@ -377,28 +492,56 @@
         if (video) data.video = video;
         if (arriendoPorDia) data.arriendoPorDia = true;
 
+        var editingId = window._adminEditingId;
+
         if (window.FIREBASE_READY && window.FIREBASE_DB) {
-          window.FIREBASE_DB.collection('propiedades').add(data)
-            .then(function () {
-              formNueva.reset();
-              resetPaisForm();
-            })
-            .catch(function (err) {
-              alert('Error al publicar: ' + (err.message || err));
-            });
+          if (editingId) {
+            window.FIREBASE_DB.collection('propiedades').doc(editingId).update(data)
+              .then(function () {
+                cancelarEdicion();
+              })
+              .catch(function (err) {
+                alert('Error al actualizar: ' + (err.message || err));
+              });
+          } else {
+            window.FIREBASE_DB.collection('propiedades').add(data)
+              .then(function () {
+                formNueva.reset();
+                resetPaisForm();
+              })
+              .catch(function (err) {
+                alert('Error al publicar: ' + (err.message || err));
+              });
+          }
         } else {
-          var arr = getPropiedades();
-          var maxId = 0;
-          arr.forEach(function (p) { var n = parseInt(p.id, 10); if (!isNaN(n) && n > maxId) maxId = n; });
-          data.id = maxId + 1;
-          arr.push(data);
-          renderListado();
-          formNueva.reset();
-          resetPaisForm();
+          if (editingId != null) {
+            var arr = getPropiedades();
+            for (var i = 0; i < arr.length; i++) {
+              if (String(arr[i].id) === String(editingId)) {
+                data.id = arr[i].id;
+                arr[i] = data;
+                break;
+              }
+            }
+            renderListado();
+            cancelarEdicion();
+          } else {
+            var arr = getPropiedades();
+            var maxId = 0;
+            arr.forEach(function (p) { var n = parseInt(p.id, 10); if (!isNaN(n) && n > maxId) maxId = n; });
+            data.id = maxId + 1;
+            arr.push(data);
+            renderListado();
+            formNueva.reset();
+            resetPaisForm();
+          }
         }
       };
       formNueva.addEventListener('submit', formNueva._submitHandler);
     }
+
+    var cancelBtnEdit = document.getElementById('adm-btn-cancelar-edicion');
+    if (cancelBtnEdit) cancelBtnEdit.addEventListener('click', cancelarEdicion);
 
     function resetPaisForm() {
       document.getElementById('adm-pais').value = 'Colombia';

@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var WHATSAPP_NUMERO = '573215000000'; // Colombia +57 321 500 00 00
+  var WHATSAPP_NUMERO = '573145000000'; // Colombia +57 314 500 00 00
 
   function getWhatsAppUrl(mensaje) {
     return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(mensaje);
@@ -469,6 +469,28 @@
       return Promise.resolve((window.PROPIEDADES || []).map(normalizarPropiedadItem));
     }
 
+    function listFromSnapshot(snapshot) {
+      var list = [];
+      snapshot.docs.forEach(function (doc, i) {
+        var d = doc.data();
+        list.push(normalizarPropiedadItem(Object.assign({ id: doc.id }, d), i));
+      });
+      return list;
+    }
+
+    function subscribePropiedades(onUpdate) {
+      if (!window.FIREBASE_READY || !window.FIREBASE_DB) return null;
+      return window.FIREBASE_DB.collection('propiedades').orderBy('titulo').onSnapshot(
+        function (snapshot) {
+          onUpdate(listFromSnapshot(snapshot));
+        },
+        function (err) {
+          console.warn('Error en tiempo real Firestore:', err && err.message);
+          onUpdate((window.PROPIEDADES || []).map(normalizarPropiedadItem));
+        }
+      );
+    }
+
     function normalizarPropiedadItem(p, i) {
       var id = p.id != null ? p.id : (i + 1);
       var imagenes = Array.isArray(p.imagenes) ? p.imagenes : (p.imagen ? [p.imagen] : []);
@@ -488,7 +510,21 @@
       };
     }
 
-    loadPropiedades().then(runInit);
+    /* Con Firebase: escucha en tiempo real para que las nuevas publicaciones aparezcan sin recargar */
+    if (window.FIREBASE_READY && window.FIREBASE_DB) {
+      var initDone = false;
+      subscribePropiedades(function (list) {
+        if (!initDone) {
+          runInit(list);
+          initDone = true;
+        } else {
+          window.PROPIEDADES = list;
+          aplicarFiltros();
+        }
+      });
+    } else {
+      loadPropiedades().then(runInit);
+    }
   }
 
   if (document.readyState === 'loading') {

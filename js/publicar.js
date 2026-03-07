@@ -1,7 +1,7 @@
 (function () {
   'use strict';
 
-  var WHATSAPP_NUMERO = '573215000000'; // +57 321 500 00 00
+  var WHATSAPP_NUMERO = '573145000000'; // +57 314 500 00 00
 
   var DRAFT_KEY = 'publicarFormDraft';
 

@@ -47,6 +47,40 @@
 .admin-login__form .input {
   margin-bottom: 0.75rem;
 }
+.admin-login__password-wrap {
+  position: relative;
+  margin-bottom: 0.75rem;
+}
+.admin-login__password-wrap .input {
+  margin-bottom: 0;
+  padding-right: 2.75rem;
+}
+.admin-login__password-toggle {
+  position: absolute;
+  right: 0.5rem;
+  top: 50%;
+  transform: translateY(-50%);
+  width: 40px;
+  height: 40px;
+  padding: 0;
+  border: none;
+  background: transparent;
+  color: var(--gris);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 4px;
+}
+.admin-login__password-toggle:hover,
+.admin-login__password-toggle:focus {
+  color: var(--dorado-claro);
+  outline: none;
+}
+.admin-login__password-icon--hide.oculto,
+.admin-login__password-icon--show.oculto {
+  display: none !important;
+}
 .admin-login__form .btn {
   width: 100%;
   margin-top: 0.5rem;
@@ -222,6 +256,10 @@
   font-size: 0.75rem;
   color: var(--gris);
   font-weight: normal;
+}
+.admin-item__edit {
+  flex-shrink: 0;
+  margin-right: 0.35rem;
 }
 .admin-item__del {
   flex-shrink: 0;
