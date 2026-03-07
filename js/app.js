@@ -84,18 +84,27 @@
   }
 
   function renderTarjeta(p) {
-    var mensaje = 'Hola, me interesa esta propiedad para ' + (p.tipo === 'venta' ? 'comprar' : 'arrendar') + ':\n\n' +
-      p.titulo + '\n' + ubicacionTexto(p) + '\n\n' + 'Vi el anuncio en la web de Inmobiliaria Pérez Araujo.';
-    var urlWhatsApp = getWhatsAppUrl(mensaje);
+    var esPorDia = p.tipo === 'arriendo' && p.arriendoPorDia === true;
+    var ubicacion = ubicacionTexto(p);
+    var primeraImg = (p.imagenes && p.imagenes[0]) || p.imagen;
+    var numFotos = (p.imagenes && p.imagenes.length) || (p.imagen ? 1 : 0);
 
     var div = document.createElement('article');
     div.className = 'tarjeta';
+    div.setAttribute('data-titulo', p.titulo || '');
+    div.setAttribute('data-ubicacion', ubicacion);
+
     var imagenHtml;
-    if (p.imagen) {
+    if (primeraImg) {
       imagenHtml =
-        '<div class="tarjeta-imagen"><img src="' + escapeAttr(p.imagen) + '" alt="' + escapeHtml(p.titulo) + '"></div>';
+        '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-imagen-link">' +
+          '<div class="tarjeta-imagen">' +
+            '<img src="' + escapeAttr(primeraImg) + '" alt="' + escapeHtml(p.titulo) + '">' +
+            (numFotos > 1 ? '<span class="tarjeta-n-fotos">+' + (numFotos - 1) + ' fotos</span>' : '') +
+          '</div>' +
+        '</a>';
     } else {
-      imagenHtml = '<div class="tarjeta-imagen">🏠</div>';
+      imagenHtml = '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-imagen-link"><div class="tarjeta-imagen">🏠</div></a>';
     }
 
     var videoHtml = '';
@@ -103,16 +112,47 @@
       videoHtml = '<a href="' + escapeAttr(p.video) + '" class="tarjeta-video" target="_blank" rel="noopener">🎬 Ver video</a>';
     }
 
-    div.innerHTML =
-      imagenHtml +
+    var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
+    if (esPorDia) tipoLabel += ' por día';
+
+    var cuerpo = imagenHtml +
       '<div class="tarjeta-cuerpo">' +
-        '<div class="tarjeta-tipo">' + (p.tipo === 'venta' ? 'Venta' : 'Arriendo') + '</div>' +
-        '<h3 class="tarjeta-titulo">' + escapeHtml(p.titulo) + '</h3>' +
-        '<p class="tarjeta-ubicacion">' + escapeHtml(ubicacionTexto(p)) + '</p>' +
+        '<div class="tarjeta-tipo">' + tipoLabel + '</div>' +
+        '<h3 class="tarjeta-titulo"><a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-titulo-link">' + escapeHtml(p.titulo) + '</a></h3>' +
+        '<p class="tarjeta-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
         '<p class="tarjeta-precio">' + escapeHtml(p.precio || 'Consultar') + '</p>' +
-        videoHtml +
-        '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn" target="_blank" rel="noopener">Consultar por WhatsApp</a>' +
-      '</div>';
+        videoHtml;
+
+    if (esPorDia) {
+      cuerpo +=
+        '<div class="tarjeta-por-dia">' +
+          '<label class="tarjeta-por-dia__label">Fecha de entrada</label>' +
+          '<input type="date" class="tarjeta-por-dia__input tarjeta-fecha-entrada" min="">' +
+          '<label class="tarjeta-por-dia__label">Fecha de salida</label>' +
+          '<input type="date" class="tarjeta-por-dia__input tarjeta-fecha-salida" min="">' +
+          '<label class="tarjeta-por-dia__label">Adultos</label>' +
+          '<input type="number" class="tarjeta-por-dia__input tarjeta-adultos" min="1" value="1" placeholder="1">' +
+          '<label class="tarjeta-por-dia__label">Niños</label>' +
+          '<input type="number" class="tarjeta-por-dia__input tarjeta-ninos" min="0" value="0" placeholder="0">' +
+          '<button type="button" class="btn btn-whatsapp-por-dia">Consultar por WhatsApp</button>' +
+        '</div>';
+    } else {
+      var mensaje = 'Hola, me interesa esta propiedad para ' + (p.tipo === 'venta' ? 'comprar' : 'arrendar') + ':\n\n' +
+        p.titulo + '\n' + ubicacion + '\n\n' + 'Vi el anuncio en la web de Inmobiliaria Pérez Araujo.';
+      var urlWhatsApp = getWhatsAppUrl(mensaje);
+      cuerpo += '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn" target="_blank" rel="noopener">Consultar por WhatsApp</a>';
+    }
+
+    cuerpo += '</div>';
+    div.innerHTML = cuerpo;
+
+    if (esPorDia) {
+      var hoy = new Date().toISOString().slice(0, 10);
+      div.querySelectorAll('.tarjeta-fecha-entrada, .tarjeta-fecha-salida').forEach(function (input) {
+        input.setAttribute('min', hoy);
+      });
+    }
+
     return div;
   }
 
@@ -143,20 +183,45 @@
     propiedades.forEach(function (p) {
       grid.appendChild(renderTarjeta(p));
     });
+
+    if (!grid._whatsappPorDiaDelegation) {
+      grid._whatsappPorDiaDelegation = true;
+      grid.addEventListener('click', function (e) {
+        var btn = e.target;
+        if (!btn || !btn.classList || !btn.classList.contains('btn-whatsapp-por-dia')) return;
+        e.preventDefault();
+        var tarjeta = btn.closest && btn.closest('.tarjeta');
+        if (!tarjeta) return;
+        var titulo = tarjeta.getAttribute('data-titulo') || '';
+        var ubicacion = tarjeta.getAttribute('data-ubicacion') || '';
+        var fechaEntrada = (tarjeta.querySelector('.tarjeta-fecha-entrada') && tarjeta.querySelector('.tarjeta-fecha-entrada').value) || '';
+        var fechaSalida = (tarjeta.querySelector('.tarjeta-fecha-salida') && tarjeta.querySelector('.tarjeta-fecha-salida').value) || '';
+        var adultos = (tarjeta.querySelector('.tarjeta-adultos') && tarjeta.querySelector('.tarjeta-adultos').value) || '1';
+        var ninos = (tarjeta.querySelector('.tarjeta-ninos') && tarjeta.querySelector('.tarjeta-ninos').value) || '0';
+        var mensaje = 'Hola, me interesa esta propiedad para arrendar por día:\n\n' +
+          titulo + '\n' + ubicacion + '\n\n' +
+          '*Fecha de entrada:* ' + (fechaEntrada || 'Por definir') + '\n' +
+          '*Fecha de salida:* ' + (fechaSalida || 'Por definir') + '\n' +
+          '*Adultos:* ' + adultos + '\n' +
+          '*Niños:* ' + ninos + '\n\n' +
+          'Vi el anuncio en la web de Inmobiliaria Pérez Araujo.';
+        window.open(getWhatsAppUrl(mensaje), '_blank', 'noopener');
+      });
+    }
   }
 
   function aplicarFiltros() {
     var propiedades = window.PROPIEDADES || [];
-    var pais = document.getElementById('filtro-pais');
-    var ciudad = document.getElementById('filtro-ciudad');
-    var municipio = document.getElementById('filtro-municipio');
-    var tipo = document.getElementById('filtro-tipo');
+    var paisEl = document.getElementById('filtro-pais');
+    var ciudadEl = document.getElementById('filtro-ciudad');
+    var municipioEl = document.getElementById('filtro-municipio');
+    var tipoEl = document.getElementById('filtro-tipo');
 
     var filtros = {
-      pais: pais ? pais.value : '',
-      ciudad: ciudad ? ciudad.value : '',
-      municipio: municipio ? municipio.value : '',
-      tipo: tipo ? tipo.value : ''
+      pais: paisEl ? paisEl.value.trim() : '',
+      ciudad: ciudadEl ? ciudadEl.value.trim() : '',
+      municipio: municipioEl ? municipioEl.value.trim() : '',
+      tipo: tipoEl ? tipoEl.value.trim() : ''
     };
 
     var listaFiltrada = filtrarPropiedades(propiedades, filtros);
@@ -183,10 +248,6 @@
     var mensajeGeneral = 'Hola, entré desde la web de Inmobiliaria Pérez Araujo. Me gustaría recibir información sobre propiedades (venta o arriendo).';
     var urlGeneral = getWhatsAppUrl(mensajeGeneral);
 
-    var fab = document.getElementById('fab-whatsapp');
-    if (fab) {
-      fab.href = urlGeneral;
-    }
     var linkContacto = document.getElementById('link-whatsapp-contacto');
     if (linkContacto) {
       linkContacto.href = urlGeneral;
@@ -338,6 +399,14 @@
             aplicarFiltros();
           });
         }
+        var ciudadEl = document.getElementById('filtro-ciudad');
+        var municipioEl = document.getElementById('filtro-municipio');
+        var tipoEl = document.getElementById('filtro-tipo');
+        var paisEl = document.getElementById('filtro-pais');
+        if (ciudadEl) ciudadEl.addEventListener('change', aplicarFiltros);
+        if (municipioEl) municipioEl.addEventListener('change', aplicarFiltros);
+        if (tipoEl) tipoEl.addEventListener('change', aplicarFiltros);
+        if (paisEl) paisEl.addEventListener('change', aplicarFiltros);
       }
 
       var inputPais = document.getElementById('filtro-pais');
@@ -382,28 +451,36 @@
         return window.FIREBASE_DB.collection('propiedades').orderBy('titulo').get()
           .then(function (snapshot) {
             var list = [];
-            snapshot.docs.forEach(function (doc) {
+            snapshot.docs.forEach(function (doc, i) {
               var d = doc.data();
-              list.push({
-                id: doc.id,
-                titulo: d.titulo || '',
-                tipo: d.tipo || 'venta',
-                pais: d.pais != null ? d.pais : 'Colombia',
-                ciudad: d.ciudad || '',
-                municipio: d.municipio || '',
-                precio: d.precio || 'Consultar',
-                descripcion: d.descripcion || '',
-                imagen: d.imagen || '',
-                video: d.video || ''
-              });
+              list.push(normalizarPropiedadItem(Object.assign({ id: doc.id }, d), i));
             });
             return list;
           })
           .catch(function () {
-            return window.PROPIEDADES || [];
+            return (window.PROPIEDADES || []).map(normalizarPropiedadItem);
           });
       }
-      return Promise.resolve(window.PROPIEDADES || []);
+      return Promise.resolve((window.PROPIEDADES || []).map(normalizarPropiedadItem));
+    }
+
+    function normalizarPropiedadItem(p, i) {
+      var id = p.id != null ? p.id : (i + 1);
+      var imagenes = Array.isArray(p.imagenes) ? p.imagenes : (p.imagen ? [p.imagen] : []);
+      return {
+        id: id,
+        titulo: p.titulo || '',
+        tipo: p.tipo || 'venta',
+        pais: p.pais != null ? p.pais : 'Colombia',
+        ciudad: p.ciudad || '',
+        municipio: p.municipio || '',
+        precio: p.precio || 'Consultar',
+        descripcion: p.descripcion || '',
+        imagen: (p.imagenes && p.imagenes[0]) || p.imagen || '',
+        imagenes: imagenes,
+        video: p.video || '',
+        arriendoPorDia: p.arriendoPorDia === true
+      };
     }
 
     loadPropiedades().then(runInit);

@@ -3,6 +3,8 @@
 
   var WHATSAPP_NUMERO = '573215000000'; // +57 321 500 00 00
 
+  var DRAFT_KEY = 'publicarFormDraft';
+
   function getWhatsAppUrl(mensaje) {
     return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(mensaje);
   }
@@ -135,6 +137,80 @@
     });
   }
 
+  function saveFormDraft(form) {
+    var inputPais = document.getElementById('filtro-pais');
+    var draft = {
+      nombre: (form.nombre && form.nombre.value) || '',
+      telefono: (form.telefono && form.telefono.value) || '',
+      email: (form.email && form.email.value) || '',
+      pais: (inputPais && inputPais.value) || 'Colombia',
+      departamento: (form.departamento && form.departamento.value) || '',
+      municipio: (form.municipio && form.municipio.value) || '',
+      zona: (form.zona && form.zona.value) || '',
+      tipo_inmueble: (form.tipo_inmueble && form.tipo_inmueble.value) || '',
+      valor_estimado: (form.valor_estimado && form.valor_estimado.value) || '',
+      mensaje: (form.mensaje && form.mensaje.value) || ''
+    };
+    try {
+      sessionStorage.setItem(DRAFT_KEY, JSON.stringify(draft));
+    } catch (e) {}
+  }
+
+  function restoreFormDraft(form) {
+    var json;
+    try {
+      json = sessionStorage.getItem(DRAFT_KEY);
+    } catch (e) { return false; }
+    if (!json) return false;
+    var draft;
+    try {
+      draft = JSON.parse(json);
+    } catch (e) { return false; }
+    if (!draft) return false;
+
+    if (form.nombre) form.nombre.value = draft.nombre || '';
+    if (form.telefono) form.telefono.value = draft.telefono || '';
+    if (form.email) form.email.value = draft.email || '';
+    if (form.zona) form.zona.value = draft.zona || '';
+    if (form.tipo_inmueble) form.tipo_inmueble.value = draft.tipo_inmueble || '';
+    if (form.valor_estimado) form.valor_estimado.value = draft.valor_estimado || '';
+    if (form.mensaje) form.mensaje.value = draft.mensaje || '';
+
+    var inputPais = document.getElementById('filtro-pais');
+    if (inputPais && draft.pais) {
+      inputPais.value = draft.pais;
+      var paises = window.PAISES_BANDERAS;
+      if (Array.isArray(paises)) {
+        var found = paises.filter(function (p) { return p.country === draft.pais; })[0];
+        var triggerContent = document.getElementById('filtro-pais-trigger-content');
+        if (triggerContent && found) {
+          triggerContent.innerHTML = '<img src="' + (found.flag || '').replace(/"/g, '&quot;') + '" alt="" class="filtro-pais-flag" width="24" height="18" aria-hidden="true"><span>' + escapeHtml(found.country) + '</span>';
+        }
+      }
+      mostrarOcultarColombiaUbicacion(draft.pais === 'Colombia');
+      if (draft.pais === 'Colombia' && draft.departamento) {
+        initDepartamentosMunicipiosPublicar();
+        var dptoSelect = document.getElementById('publicar-departamento');
+        var munSelect = document.getElementById('publicar-municipio');
+        if (dptoSelect) dptoSelect.value = draft.departamento;
+        if (dptoSelect && dptoSelect.value) dptoSelect.dispatchEvent(new Event('change', { bubbles: true }));
+        setTimeout(function () {
+          if (munSelect) munSelect.value = draft.municipio || '';
+        }, 0);
+      }
+    }
+
+    try {
+      sessionStorage.removeItem(DRAFT_KEY);
+    } catch (e) {}
+    var acepto = document.getElementById('acepto-politica');
+    if (acepto) {
+      acepto.focus();
+      acepto.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    }
+    return true;
+  }
+
   function armarMensajePublicar(form) {
     var datos = new FormData(form);
     var nombre = (datos.get('nombre') || '').trim();
@@ -179,6 +255,14 @@
 
     var form = document.getElementById('form-publicar');
     if (form) {
+      var linkPolitica = document.getElementById('link-politica-publicar');
+      if (linkPolitica) {
+        linkPolitica.addEventListener('click', function (e) {
+          e.preventDefault();
+          saveFormDraft(form);
+          window.location.href = 'politica-privacidad.html';
+        });
+      }
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var check = document.getElementById('acepto-politica');
@@ -190,7 +274,16 @@
         var mensaje = armarMensajePublicar(form);
         var url = getWhatsAppUrl(mensaje);
         window.open(url, '_blank', 'noopener');
+        try {
+          sessionStorage.removeItem(DRAFT_KEY);
+        } catch (err) {}
       });
+    }
+
+    if (form) {
+      setTimeout(function () {
+        restoreFormDraft(form);
+      }, 100);
     }
   }
 

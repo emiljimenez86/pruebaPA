@@ -207,9 +207,13 @@
         '    municipio: ' + escapeJs(p.municipio || ''),
         '    precio: ' + escapeJs(p.precio),
         '    descripcion: ' + escapeJs(p.descripcion),
-        '    imagen: ' + escapeJs(p.imagen)
+        '    imagen: ' + escapeJs(p.imagen || (p.imagenes && p.imagenes[0]) || '')
       ];
+      if (p.imagenes && Array.isArray(p.imagenes) && p.imagenes.length > 0) {
+        props.push('    imagenes: [' + p.imagenes.map(function (url) { return escapeJs(url); }).join(', ') + ']');
+      }
       if (p.video) props.push('    video: ' + escapeJs(p.video));
+      if (p.arriendoPorDia === true) props.push('    arriendoPorDia: true');
       var block = '  {\n' + props.join(',\n') + '\n  }' + (i < arr.length - 1 ? ',' : '');
       lineas.push(block);
     });
@@ -234,7 +238,7 @@
       div.innerHTML =
         '<div class="admin-item__preview">' + img + '</div>' +
         '<div class="admin-item__info">' +
-          '<strong>' + escapeHtml(p.titulo || 'Sin título') + '</strong> — ' + (p.tipo === 'venta' ? 'Venta' : 'Arriendo') + '<br>' +
+          '<strong>' + escapeHtml(p.titulo || 'Sin título') + '</strong> — ' + (p.tipo === 'venta' ? 'Venta' : 'Arriendo') + (p.arriendoPorDia ? ' <span class="admin-item__por-dia">Por día</span>' : '') + '<br>' +
           pais + (p.ciudad ? ', ' + p.ciudad : '') + (p.municipio ? ', ' + p.municipio : '') + (p.precio ? ' · ' + p.precio : '') +
           (p.video ? ' <span class="admin-item__video">🎬 Video</span>' : '') +
         '</div>' +
@@ -267,6 +271,22 @@
     initPaisesAdmin();
     initDepartamentos();
 
+    var tipoSelect = document.getElementById('adm-tipo');
+    var arriendoPorDiaWrap = document.getElementById('adm-arriendo-por-dia-wrap');
+    var arriendoPorDiaCheck = document.getElementById('adm-arriendo-por-dia');
+    if (tipoSelect && arriendoPorDiaWrap) {
+      function toggleArriendoPorDia() {
+        if (tipoSelect.value === 'arriendo') {
+          arriendoPorDiaWrap.classList.remove('oculto');
+        } else {
+          arriendoPorDiaWrap.classList.add('oculto');
+          if (arriendoPorDiaCheck) arriendoPorDiaCheck.checked = false;
+        }
+      }
+      tipoSelect.addEventListener('change', toggleArriendoPorDia);
+      toggleArriendoPorDia();
+    }
+
     if (window.FIREBASE_READY && window.FIREBASE_DB) {
       var db = window.FIREBASE_DB;
       db.collection('propiedades').orderBy('titulo').onSnapshot(function (snapshot) {
@@ -282,9 +302,11 @@
             municipio: d.municipio || '',
             precio: d.precio || 'Consultar',
             descripcion: d.descripcion || '',
-            imagen: d.imagen || ''
+            imagen: (d.imagenes && d.imagenes[0]) || d.imagen || '',
+            imagenes: Array.isArray(d.imagenes) ? d.imagenes : (d.imagen ? [d.imagen] : [])
           };
           if (d.video) o.video = d.video;
+          if (d.arriendoPorDia === true) o.arriendoPorDia = true;
           propiedadesFirestore.push(o);
         });
         renderListado();
@@ -320,6 +342,7 @@
         var descripcion = (document.getElementById('adm-descripcion').value || '').trim();
         var imagenesRaw = (document.getElementById('adm-imagenes').value || '').trim();
         var videoRaw = (document.getElementById('adm-video').value || '').trim();
+        var arriendoPorDia = (document.getElementById('adm-arriendo-por-dia') && document.getElementById('adm-arriendo-por-dia').checked) && (tipo === 'arriendo');
 
         if (pais === 'Colombia' && (!departamento || !municipio)) {
           alert('Para Colombia debes seleccionar Departamento y Municipio.');
@@ -328,6 +351,7 @@
 
         var urls = imagenesRaw.split(/\n/).map(function (s) { return s.trim(); }).filter(Boolean);
         var imagen = urls[0] || '';
+        var imagenes = urls.length ? urls : (imagen ? [imagen] : []);
 
         var video = '';
         if (videoRaw) {
@@ -347,9 +371,11 @@
           municipio: municipio,
           precio: precio || 'Consultar',
           descripcion: descripcion,
-          imagen: imagen
+          imagen: imagen,
+          imagenes: imagenes
         };
         if (video) data.video = video;
+        if (arriendoPorDia) data.arriendoPorDia = true;
 
         if (window.FIREBASE_READY && window.FIREBASE_DB) {
           window.FIREBASE_DB.collection('propiedades').add(data)
@@ -381,6 +407,10 @@
       if (tc && colombia) tc.innerHTML = '<img src="' + (colombia.flag || '').replace(/"/g, '&quot;') + '" alt="" class="filtro-pais-flag" width="24" height="18" aria-hidden="true"><span>Colombia</span>';
       document.getElementById('adm-departamento').value = '';
       document.getElementById('adm-municipio').innerHTML = '<option value="">Seleccione</option>';
+      var wrap = document.getElementById('adm-arriendo-por-dia-wrap');
+      var check = document.getElementById('adm-arriendo-por-dia');
+      if (wrap) wrap.classList.add('oculto');
+      if (check) check.checked = false;
     }
 
     var btnExportar = document.getElementById('btn-exportar');

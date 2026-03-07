@@ -3,12 +3,16 @@ const CACHE_NAME = 'inmobiliaria-perez-araujo-v1';
 const APP_SHELL = [
   './',
   './index.html',
+  './pnl-a8f3k2m9.html',
   './publicar.html',
   './css/styles.css',
+  './css/admin.css',
   './js/app.js',
+  './js/admin.js',
   './js/datos.js',
   './js/publicar.js',
   './js/pwa.js',
+  './js/firebase-app.js',
   './image/logo/PerezAraujoLogo.png'
 ];
 
@@ -50,6 +54,10 @@ self.addEventListener('fetch', (event) => {
       }
       return fetch(request).catch(() => {
         if (request.mode === 'navigate') {
+          const path = new URL(request.url).pathname || '';
+          if (path.includes('pnl-a8f3k2m9')) {
+            return caches.match('./pnl-a8f3k2m9.html');
+          }
           return caches.match('./index.html');
         }
         return undefined;

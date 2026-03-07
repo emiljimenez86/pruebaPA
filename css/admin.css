@@ -22,8 +22,12 @@
   text-align: center;
 }
 .admin-login__logo {
+  display: block;
+  margin-left: auto;
+  margin-right: auto;
   margin-bottom: 1rem;
   opacity: 0.95;
+  border-radius: var(--radio);
 }
 .admin-login__titulo {
   font-family: 'Libre Baskerville', serif;
@@ -213,6 +217,11 @@
 .admin-item__video {
   font-size: 0.8rem;
   color: var(--dorado);
+}
+.admin-item__por-dia {
+  font-size: 0.75rem;
+  color: var(--gris);
+  font-weight: normal;
 }
 .admin-item__del {
   flex-shrink: 0;

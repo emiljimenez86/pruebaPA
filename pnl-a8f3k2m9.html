@@ -5,8 +5,13 @@
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <meta name="theme-color" content="#0a0a0a">
   <meta name="robots" content="noindex, nofollow">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Administrador">
   <title>Panel | Inmobiliaria</title>
   <link rel="icon" type="image/png" href="image/logo/PerezAraujoLogo.png">
+  <link rel="apple-touch-icon" href="image/logo/PerezAraujoLogo.png">
+  <link rel="manifest" href="manifest-admin.json">
   <link rel="stylesheet" href="css/styles.css">
   <link rel="stylesheet" href="css/admin.css">
 </head>
@@ -61,6 +66,11 @@
             <option value="venta">Venta</option>
             <option value="arriendo">Arriendo</option>
           </select>
+
+          <label class="checkbox-label admin-arriendo-por-dia-wrap oculto" id="adm-arriendo-por-dia-wrap">
+            <input type="checkbox" name="arriendo_por_dia" id="adm-arriendo-por-dia" value="1">
+            <span>Disponible por día (habitación, cabaña, apartamento temporal, etc.)</span>
+          </label>
 
           <label class="label" id="adm-pais-label">País *</label>
           <div class="filtro-pais-wrap admin-pais-wrap" id="adm-pais-wrap">
@@ -118,6 +128,8 @@
     </main>
   </div>
 
+  <button type="button" class="install-btn" id="admin-install-btn" aria-label="Instalar aplicación">Instalar app</button>
+
   <script src="js/datos.js"></script>
   <script src="js/colombia-data.js"></script>
   <script src="js/PaisesBanderas-data.js"></script>
@@ -128,5 +140,43 @@
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-firestore-compat.js"></script>
   <script src="js/firebase-app.js"></script>
   <script src="js/admin.js"></script>
+  <script>
+    (function () {
+      if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function () {
+          navigator.serviceWorker.register('./sw.js').catch(function () {});
+        });
+      }
+
+      var adminInstallBtn = document.getElementById('admin-install-btn');
+      var deferredPrompt = null;
+      var isAndroid = /android/i.test(navigator.userAgent || '');
+
+      window.addEventListener('beforeinstallprompt', function (e) {
+        e.preventDefault();
+        deferredPrompt = e;
+        if (adminInstallBtn) adminInstallBtn.style.display = '';
+      });
+
+      if (adminInstallBtn) {
+        if (!isAndroid) adminInstallBtn.style.display = 'none';
+        else if (!deferredPrompt) adminInstallBtn.style.display = '';
+        adminInstallBtn.addEventListener('click', function () {
+          if (deferredPrompt) {
+            adminInstallBtn.disabled = true;
+            deferredPrompt.prompt();
+            deferredPrompt.userChoice.then(function () {
+              deferredPrompt = null;
+              adminInstallBtn.disabled = false;
+            }).catch(function () {
+              adminInstallBtn.disabled = false;
+            });
+          } else {
+            window.alert('Para instalar: menú del navegador → Añadir a pantalla de inicio');
+          }
+        });
+      }
+    })();
+  </script>
 </body>
 </html>
