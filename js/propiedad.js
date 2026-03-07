@@ -73,6 +73,17 @@
     return match ? match[1] : null;
   }
 
+  /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src> */
+  function urlImagenDrive(url) {
+    if (!url || typeof url !== 'string') return url;
+    var u = url.trim();
+    var m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    m = u.match(/drive\.google\.com\/open\?id=([^&]+)/);
+    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    return u;
+  }
+
   function renderDetalle(p) {
     var main = document.getElementById('detalle-propiedad');
     var cargando = document.getElementById('detalle-cargando');
@@ -84,6 +95,7 @@
 
     var ubicacion = ubicacionTexto(p);
     var imagenes = p.imagenes && p.imagenes.length > 0 ? p.imagenes : (p.imagen ? [p.imagen] : []);
+    imagenes = imagenes.map(function (u) { return urlImagenDrive(u); });
     var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
     if (p.arriendoPorDia) tipoLabel += ' por día';
 

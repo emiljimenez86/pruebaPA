@@ -7,6 +7,17 @@
     return 'https://wa.me/' + WHATSAPP_NUMERO + '?text=' + encodeURIComponent(mensaje);
   }
 
+  /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src> */
+  function urlImagenDrive(url) {
+    if (!url || typeof url !== 'string') return url;
+    var u = url.trim();
+    var m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    m = u.match(/drive\.google\.com\/open\?id=([^&]+)/);
+    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    return u;
+  }
+
   function initVideoYoutube() {
     var section = document.getElementById('seccion-video');
     var iframe = document.getElementById('iframe-youtube');
@@ -87,6 +98,7 @@
     var esPorDia = p.tipo === 'arriendo' && p.arriendoPorDia === true;
     var ubicacion = ubicacionTexto(p);
     var primeraImg = (p.imagenes && p.imagenes[0]) || p.imagen;
+    primeraImg = urlImagenDrive(primeraImg);
     var numFotos = (p.imagenes && p.imagenes.length) || (p.imagen ? 1 : 0);
 
     var div = document.createElement('article');
@@ -121,6 +133,7 @@
         '<h3 class="tarjeta-titulo"><a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-titulo-link">' + escapeHtml(p.titulo) + '</a></h3>' +
         '<p class="tarjeta-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
         '<p class="tarjeta-precio">' + escapeHtml(p.precio || 'Consultar') + '</p>' +
+        '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-ver-mas">Ver más fotos y video</a>' +
         videoHtml;
 
     if (esPorDia) {

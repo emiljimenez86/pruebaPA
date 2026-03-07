@@ -460,6 +460,30 @@ input.input {
 .tarjeta .btn {
   width: 100%;
 }
+.tarjeta-ver-mas {
+  display: block;
+  width: 100%;
+  text-align: center;
+  margin-bottom: 0.5rem;
+  background: transparent;
+  color: var(--dorado);
+  border: 1px solid rgba(201, 162, 39, 0.5);
+  min-height: var(--touch-min);
+  padding: 0.75rem 1.25rem;
+  font-size: 1rem;
+  font-weight: 600;
+  font-family: inherit;
+  border-radius: var(--radio);
+  cursor: pointer;
+  text-decoration: none;
+}
+.tarjeta-ver-mas:hover,
+.tarjeta-ver-mas:focus-visible {
+  background: rgba(201, 162, 39, 0.15);
+  color: var(--dorado-claro);
+  border-color: var(--dorado);
+  text-decoration: none;
+}
 
 .tarjeta-por-dia {
   margin-top: 0.75rem;
@@ -512,6 +536,12 @@ input.input {
   margin: 0 auto;
   padding-left: 0.5rem;
   padding-right: 0.5rem;
+  box-sizing: border-box;
+}
+.main-detalle *,
+.main-detalle *::before,
+.main-detalle *::after {
+  box-sizing: border-box;
 }
 .detalle-cargando,
 .detalle-no-encontrado {
@@ -524,6 +554,8 @@ input.input {
 }
 .detalle-wrap {
   padding-bottom: 2rem;
+  max-width: 100%;
+  overflow-x: hidden;
 }
 .detalle-volver {
   display: inline-block;
@@ -536,12 +568,13 @@ input.input {
   overflow: hidden;
   background: var(--negro-suave);
   border: 1px solid rgba(201, 162, 39, 0.25);
+  max-width: 100%;
 }
 .detalle-galeria__principal {
   position: relative;
   aspect-ratio: 4 / 3;
-  min-height: 55vh;
-  max-height: 420px;
+  min-height: 40vh;
+  max-height: 320px;
   background: var(--negro);
 }
 .detalle-galeria__img {
@@ -631,6 +664,7 @@ input.input {
 }
 .detalle-info {
   padding: 0 0.25rem;
+  max-width: 100%;
 }
 .detalle-tipo {
   font-size: 0.75rem;
@@ -642,9 +676,10 @@ input.input {
 }
 .detalle-titulo {
   font-family: 'Libre Baskerville', serif;
-  font-size: 1.5rem;
+  font-size: 1.35rem;
   color: var(--blanco);
   margin: 0 0 0.5rem;
+  word-wrap: break-word;
 }
 .detalle-ubicacion {
   font-size: 1rem;
@@ -676,9 +711,10 @@ input.input {
 .detalle-video__wrap {
   position: relative;
   width: 100%;
+  max-width: 100%;
   aspect-ratio: 16 / 9;
-  min-height: 220px;
-  max-height: 400px;
+  min-height: 180px;
+  max-height: 320px;
   border-radius: var(--radio);
   overflow: hidden;
   background: var(--negro-suave);

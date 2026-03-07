@@ -32,6 +32,17 @@
     return div.innerHTML;
   }
 
+  /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src> */
+  function urlImagenDrive(url) {
+    if (!url || typeof url !== 'string') return url;
+    var u = url.trim();
+    var m = u.match(/drive\.google\.com\/file\/d\/([^/]+)/);
+    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    m = u.match(/drive\.google\.com\/open\?id=([^&]+)/);
+    if (m) return 'https://drive.google.com/uc?export=view&id=' + m[1];
+    return u;
+  }
+
   function initLogin() {
     if (!window.FIREBASE_READY) {
       if (avisoFirebase) mostrar(avisoFirebase);
@@ -248,7 +259,7 @@
       var div = document.createElement('div');
       div.className = 'admin-item';
       var id = p.id != null ? String(p.id) : String(index);
-      var img = p.imagen ? '<img src="' + p.imagen.replace(/"/g, '&quot;') + '" alt="" class="admin-item__img">' : '<span class="admin-item__sin-img">Sin imagen</span>';
+      var img = p.imagen ? '<img src="' + urlImagenDrive(p.imagen).replace(/"/g, '&quot;') + '" alt="" class="admin-item__img">' : '<span class="admin-item__sin-img">Sin imagen</span>';
       var pais = p.pais != null ? p.pais : 'Colombia';
       div.innerHTML =
         '<div class="admin-item__preview">' + img + '</div>' +
