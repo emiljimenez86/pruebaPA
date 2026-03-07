@@ -109,7 +109,7 @@
 
           <label class="label" for="adm-imagenes">URLs de imágenes</label>
           <textarea id="adm-imagenes" name="imagenes" class="input input-area" rows="3" placeholder="Una URL por línea (Imgur, enlace directo de imagen, etc.)."></textarea>
-          <p class="admin-hint">Una URL por línea. La primera es la imagen principal. Puedes pegar el enlace normal de <strong>Google Drive</strong> (Compartir → copiar enlace); la web lo convertirá para que se vea. Si aun así no carga, usa el formato directo: <code>https://drive.google.com/uc?export=view&amp;id=ID</code> (el ID está en el enlace: drive.google.com/file/d/<strong>ID</strong>/view).</p>
+          <p class="admin-hint">Una URL por línea. La primera es la imagen principal. Puedes pegar el enlace normal de <strong>Google Drive</strong> (Compartir → copiar enlace); la web lo convertirá para que se vea. Si aun así no carga, usa el formato directo: <code>https://drive.google.com/uc?export=view&amp;id=ID</code> (el ID está en el enlace: drive.google.com/file/d/<strong>ID</strong>/view). Para máxima compatibilidad en todos los celulares, puedes usar enlaces directos de <strong>Imgur</strong> u otro host de imágenes.</p>
 
           <label class="label" for="adm-video">URL de video (YouTube)</label>
           <input type="url" id="adm-video" name="video" class="input" placeholder="Ej: https://youtu.be/abc123">
@@ -117,6 +117,12 @@
           <button type="submit" class="btn btn-enviar" id="adm-btn-submit">Añadir propiedad</button>
           <button type="button" class="btn btn--sec oculto" id="adm-btn-cancelar-edicion">Cancelar</button>
         </form>
+      </section>
+
+      <section class="admin-section">
+        <h2>Propiedades publicadas</h2>
+        <p class="admin-info">Aquí puedes editar o eliminar las propiedades. Con Firebase, los cambios se ven en la web al instante.</p>
+        <div id="admin-listado" class="admin-listado"></div>
       </section>
     </main>
   </div>

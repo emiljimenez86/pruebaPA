@@ -99,6 +99,12 @@
     return m ? 'https://drive.google.com/uc?export=view&id=' + m[1] : '';
   }
 
+  /** Proxy para cuando thumbnail y uc fallan (p. ej. en algunos móviles) */
+  function driveThumbToProxy(src) {
+    var uc = driveThumbToUc(src);
+    return uc ? 'https://wsrv.nl/?url=' + encodeURIComponent(uc) + '&n=-1' : '';
+  }
+
   function renderDetalle(p) {
     var main = document.getElementById('detalle-propiedad');
     var cargando = document.getElementById('detalle-cargando');
@@ -171,6 +177,23 @@
       document.title = (p.titulo || 'Propiedad') + ' | Inmobiliaria Pérez Araujo';
     }
 
+    var galleryImgEl = document.getElementById('detalle-galeria-img');
+    if (galleryImgEl) {
+      galleryImgEl.referrerPolicy = 'no-referrer';
+      galleryImgEl.onerror = function () {
+        var uc = driveThumbToUc(galleryImgEl.src);
+        var proxy = driveThumbToProxy(galleryImgEl.src);
+        if (uc && galleryImgEl.src !== uc) {
+          galleryImgEl.src = uc;
+          galleryImgEl.dataset.proxyUrl = proxy;
+        } else if (galleryImgEl.dataset.proxyUrl) {
+          galleryImgEl.src = galleryImgEl.dataset.proxyUrl;
+          delete galleryImgEl.dataset.proxyUrl;
+          galleryImgEl.onerror = null;
+        }
+      };
+    }
+
     if (imagenes.length > 1) {
       var idx = 0;
       var imgEl = document.getElementById('detalle-galeria-img');
@@ -220,7 +243,15 @@
       lightboxImg.referrerPolicy = 'no-referrer';
       lightboxImg.onerror = function () {
         var uc = driveThumbToUc(lightboxImg.src);
-        if (uc) { lightboxImg.src = uc; lightboxImg.onerror = null; }
+        var proxy = driveThumbToProxy(lightboxImg.src);
+        if (uc && lightboxImg.src !== uc) {
+          lightboxImg.src = uc;
+          lightboxImg.dataset.proxyUrl = proxy;
+        } else if (lightboxImg.dataset.proxyUrl) {
+          lightboxImg.src = lightboxImg.dataset.proxyUrl;
+          delete lightboxImg.dataset.proxyUrl;
+          lightboxImg.onerror = null;
+        }
       };
     }
     if (galleryImg && lightbox && lightboxImg) {

@@ -35,6 +35,13 @@
     return '';
   }
 
+  /** Proxy de imágenes para cuando Drive falla en algunos móviles (thumbnail y uc dan error) */
+  function urlImagenDriveProxy(url) {
+    var uc = urlImagenDriveUc(url);
+    if (!uc) return '';
+    return 'https://wsrv.nl/?url=' + encodeURIComponent(uc) + '&n=-1';
+  }
+
   function initVideoYoutube() {
     var section = document.getElementById('seccion-video');
     var iframe = document.getElementById('iframe-youtube');
@@ -117,6 +124,7 @@
     var primeraImg = (p.imagenes && p.imagenes[0]) || p.imagen;
     primeraImg = urlImagenDrive(primeraImg);
     var primeraImgFallback = urlImagenDriveUc((p.imagenes && p.imagenes[0]) || p.imagen);
+    var primeraImgProxy = urlImagenDriveProxy((p.imagenes && p.imagenes[0]) || p.imagen);
     var numFotos = (p.imagenes && p.imagenes.length) || (p.imagen ? 1 : 0);
 
     var div = document.createElement('article');
@@ -127,10 +135,11 @@
     var imagenHtml;
     if (primeraImg) {
       var fallbackAttr = primeraImgFallback ? ' data-fallback="' + escapeAttr(primeraImgFallback) + '"' : '';
+      var proxyAttr = primeraImgProxy ? ' data-fallback-proxy="' + escapeAttr(primeraImgProxy) + '"' : '';
       imagenHtml =
         '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-imagen-link">' +
           '<div class="tarjeta-imagen">' +
-            '<img src="' + escapeAttr(primeraImg) + '" alt="' + escapeHtml(p.titulo) + '" referrerpolicy="no-referrer" loading="lazy"' + fallbackAttr + '>' +
+            '<img src="' + escapeAttr(primeraImg) + '" alt="' + escapeHtml(p.titulo) + '" referrerpolicy="no-referrer" loading="lazy"' + fallbackAttr + proxyAttr + '>' +
             (numFotos > 1 ? '<span class="tarjeta-n-fotos">+' + (numFotos - 1) + ' fotos</span>' : '') +
           '</div>' +
         '</a>';
@@ -220,11 +229,15 @@
       grid._imgFallbackDelegation = true;
       grid.addEventListener('error', function (e) {
         var img = e.target;
-        if (img && img.tagName === 'IMG' && img.dataset && img.dataset.fallback) {
+        if (!img || img.tagName !== 'IMG' || !img.dataset) return;
+        if (img.dataset.fallback) {
           img.src = img.dataset.fallback;
           img.removeAttribute('data-fallback');
-          img.onerror = null;
+        } else if (img.dataset.fallbackProxy) {
+          img.src = img.dataset.fallbackProxy;
+          img.removeAttribute('data-fallback-proxy');
         }
+        img.onerror = null;
       }, true);
     }
 
