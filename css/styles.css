@@ -53,9 +53,7 @@ a:hover, a:focus-visible {
 
 /* Header */
 .header {
-  position: sticky;
-  top: 0;
-  z-index: 10;
+  position: relative;
   background: var(--negro);
   border-bottom: 1px solid rgba(201, 162, 39, 0.3);
   padding: 1rem;
@@ -876,6 +874,12 @@ input.input {
   font-size: 1.25rem;
   width: 2rem;
   text-align: center;
+}
+.contacto-item__logo {
+  width: 28px;
+  height: 28px;
+  object-fit: contain;
+  flex-shrink: 0;
 }
 .contacto-whatsapp {
   color: var(--dorado);
