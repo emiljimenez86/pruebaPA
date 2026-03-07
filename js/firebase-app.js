@@ -20,9 +20,9 @@
 
   try {
     firebase.initializeApp(config);
-    window.FIREBASE_AUTH = firebase.auth();
-    window.FIREBASE_DB = firebase.firestore();
-    window.FIREBASE_READY = true;
+    window.FIREBASE_AUTH = typeof firebase.auth === 'function' ? firebase.auth() : null;
+    window.FIREBASE_DB = typeof firebase.firestore === 'function' ? firebase.firestore() : null;
+    window.FIREBASE_READY = !!(window.FIREBASE_DB);
   } catch (e) {
     console.warn('Firebase init error:', e);
   }

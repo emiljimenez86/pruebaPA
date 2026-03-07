@@ -457,7 +457,12 @@
             });
             return list;
           })
-          .catch(function () {
+          .catch(function (err) {
+            console.warn('No se pudieron cargar propiedades desde Firestore:', err && err.message);
+            if (err && err.message && err.message.indexOf('index') !== -1 && err.message.indexOf('https://') !== -1) {
+              var link = err.message.match(/https:\/\/[^\s]+/);
+              if (link && link[0]) console.warn('Crea el índice en Firebase y vuelve a cargar:', link[0]);
+            }
             return (window.PROPIEDADES || []).map(normalizarPropiedadItem);
           });
       }
