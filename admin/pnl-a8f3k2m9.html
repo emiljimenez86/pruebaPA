@@ -60,6 +60,17 @@
 
     <main class="admin-main">
       <section class="admin-section">
+        <h2>Editar banner publicitario</h2>
+        <p class="admin-info">Cambia el video de YouTube que aparece como banner en la página principal de la inmobiliaria.</p>
+        <form id="form-banner-video" class="admin-form">
+          <label class="label" for="adm-banner-video">URL de video (YouTube)</label>
+          <input type="url" id="adm-banner-video" class="input" placeholder="https://youtu.be/abc123 o https://www.youtube.com/watch?v=abc123">
+          <button type="submit" class="btn btn-enviar">Guardar banner publicitario</button>
+        </form>
+        <p class="admin-hint" id="adm-banner-estado"></p>
+      </section>
+
+      <section class="admin-section">
         <h2>Publicar nueva propiedad</h2>
         <p class="admin-info">Los clientes envían el formulario por WhatsApp; tú subes aquí la información, imágenes y videos.</p>
         <form id="form-nueva-propiedad" class="admin-form">
@@ -108,8 +119,8 @@
           <textarea id="adm-descripcion" name="descripcion" class="input input-area" rows="3" placeholder="Breve descripción de la propiedad..." required></textarea>
 
           <label class="label" for="adm-imagenes">URLs de imágenes</label>
-          <textarea id="adm-imagenes" name="imagenes" class="input input-area" rows="3" placeholder="Una URL por línea (Imgur, enlace directo de imagen, etc.)."></textarea>
-          <p class="admin-hint">Una URL por línea. La primera es la imagen principal. Puedes pegar el enlace normal de <strong>Google Drive</strong> (Compartir → copiar enlace); la web lo convertirá para que se vea. Si aun así no carga, usa el formato directo: <code>https://drive.google.com/uc?export=view&amp;id=ID</code> (el ID está en el enlace: drive.google.com/file/d/<strong>ID</strong>/view). Para máxima compatibilidad en todos los celulares, puedes usar enlaces directos de <strong>Imgur</strong> u otro host de imágenes.</p>
+          <textarea id="adm-imagenes" name="imagenes" class="input input-area" rows="3" placeholder="URLs separadas por coma o por línea (ej: link1, link2, link3)"></textarea>
+          <p class="admin-hint">Separa las URLs con <strong>coma</strong> o una por línea. La primera es la imagen principal. Puedes pegar el enlace normal de <strong>Google Drive</strong> (Compartir → copiar enlace); la web lo convertirá para que se vea. Si aun así no carga, usa el formato directo: <code>https://drive.google.com/uc?export=view&amp;id=ID</code> (el ID está en el enlace: drive.google.com/file/d/<strong>ID</strong>/view). Para máxima compatibilidad en todos los celulares, puedes usar enlaces directos de <strong>Imgur</strong> u otro host de imágenes.</p>
 
           <label class="label" for="adm-video">URL de video (YouTube)</label>
           <input type="url" id="adm-video" name="video" class="input" placeholder="Ej: https://youtu.be/abc123">

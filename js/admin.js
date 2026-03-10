@@ -51,6 +51,18 @@
     return u;
   }
 
+  function normalizarYoutubeUrl(videoRaw) {
+    if (!videoRaw) return '';
+    var v = String(videoRaw).trim();
+    if (!v) return '';
+    if (v.indexOf('youtu.be/') !== -1) {
+      return 'https://www.youtube.com/watch?v=' + v.split('youtu.be/')[1].split('?')[0].split('&')[0];
+    }
+    var m = v.match(/[?&]v=([^&]+)/);
+    if (m) return 'https://www.youtube.com/watch?v=' + m[1];
+    return v;
+  }
+
   function initLogin() {
     if (!window.FIREBASE_READY) {
       if (avisoFirebase) mostrar(avisoFirebase);
@@ -358,7 +370,7 @@
 
     precioEl.value = p.precio || '';
     descEl.value = p.descripcion || '';
-    imagenesEl.value = (p.imagenes && Array.isArray(p.imagenes)) ? p.imagenes.join('\n') : (p.imagen ? p.imagen : '');
+    imagenesEl.value = (p.imagenes && Array.isArray(p.imagenes)) ? p.imagenes.join(', ') : (p.imagen ? p.imagen : '');
     videoEl.value = p.video || '';
     if (arriendoPorDiaCheck) arriendoPorDiaCheck.checked = !!(p.tipo === 'arriendo' && p.arriendoPorDia);
 
@@ -396,6 +408,51 @@
   function initPanel() {
     initPaisesAdmin();
     initDepartamentos();
+
+    /* Banner publicitario (video de inicio) */
+    (function initBannerVideo() {
+      var input = document.getElementById('adm-banner-video');
+      var form = document.getElementById('form-banner-video');
+      var estado = document.getElementById('adm-banner-estado');
+      if (!input || !form) return;
+
+      function setEstado(msg) {
+        if (!estado) return;
+        estado.textContent = msg || '';
+      }
+
+      if (window.FIREBASE_READY && window.FIREBASE_DB) {
+        window.FIREBASE_DB.collection('config').doc('banner').get()
+          .then(function (doc) {
+            if (doc && doc.exists) {
+              var d = doc.data() || {};
+              if (d.videoUrl) input.value = String(d.videoUrl);
+            }
+          })
+          .catch(function () {});
+      }
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var raw = (input.value || '').trim();
+        if (!raw) {
+          setEstado('Ingresa una URL de YouTube válida.');
+          return;
+        }
+        var urlNormalizada = normalizarYoutubeUrl(raw);
+        if (!window.FIREBASE_READY || !window.FIREBASE_DB) {
+          alert('Para editar el banner necesitas tener Firebase configurado en la web pública.');
+          return;
+        }
+        window.FIREBASE_DB.collection('config').doc('banner').set({
+          videoUrl: urlNormalizada
+        }, { merge: true }).then(function () {
+          setEstado('Banner actualizado. El video de inicio cambiará en la página principal.');
+        }).catch(function (err) {
+          alert('Error al guardar el banner: ' + (err && err.message ? err.message : err));
+        });
+      });
+    })();
 
     var tipoSelect = document.getElementById('adm-tipo');
     var arriendoPorDiaWrap = document.getElementById('adm-arriendo-por-dia-wrap');
@@ -483,19 +540,11 @@
           return;
         }
 
-        var urls = imagenesRaw.split(/\n/).map(function (s) { return s.trim(); }).filter(Boolean);
+        var urls = imagenesRaw.split(/\n|,/).map(function (s) { return s.trim(); }).filter(Boolean);
         var imagen = urls[0] || '';
         var imagenes = urls.length ? urls : (imagen ? [imagen] : []);
 
-        var video = '';
-        if (videoRaw) {
-          if (videoRaw.indexOf('youtu.be/') !== -1) {
-            video = 'https://www.youtube.com/watch?v=' + videoRaw.split('youtu.be/')[1].split('?')[0].split('&')[0];
-          } else {
-            var m = videoRaw.match(/[?&]v=([^&]+)/);
-            video = m ? 'https://www.youtube.com/watch?v=' + m[1] : videoRaw;
-          }
-        }
+        var video = normalizarYoutubeUrl(videoRaw);
 
         var data = {
           titulo: titulo,

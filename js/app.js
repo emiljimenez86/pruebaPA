@@ -46,17 +46,39 @@
     var section = document.getElementById('seccion-video');
     var iframe = document.getElementById('iframe-youtube');
     if (!section || !iframe) return;
-    var url = (section.getAttribute('data-youtube-url') || '').trim();
-    if (!url) return;
-    var id = null;
-    if (url.indexOf('youtu.be/') !== -1) {
-      id = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
-    } else {
-      var match = url.match(/[?&]v=([^&]+)/);
-      id = match ? match[1] : null;
+
+    function aplicarDesdeUrl(url) {
+      url = (url || '').trim();
+      if (!url) {
+        url = (section.getAttribute('data-youtube-url') || '').trim();
+      }
+      if (!url) return;
+      var id = null;
+      if (url.indexOf('youtu.be/') !== -1) {
+        id = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
+      } else {
+        var match = url.match(/[?&]v=([^&]+)/);
+        id = match ? match[1] : null;
+      }
+      if (!id) return;
+      iframe.src = 'https://www.youtube.com/embed/' + id + '?rel=0';
     }
-    if (!id) return;
-    iframe.src = 'https://www.youtube.com/embed/' + id + '?rel=0';
+
+    var urlAttr = (section.getAttribute('data-youtube-url') || '').trim();
+
+    if (window.FIREBASE_READY && window.FIREBASE_DB) {
+      window.FIREBASE_DB.collection('config').doc('banner').get()
+        .then(function (doc) {
+          var d = doc && doc.exists ? doc.data() : null;
+          var urlDb = d && d.videoUrl ? String(d.videoUrl) : '';
+          aplicarDesdeUrl(urlDb || urlAttr);
+        })
+        .catch(function () {
+          aplicarDesdeUrl(urlAttr);
+        });
+    } else {
+      aplicarDesdeUrl(urlAttr);
+    }
   }
 
   function llenarSelect(selectId, opciones, valorVacio) {
