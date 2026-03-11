@@ -52,6 +52,7 @@
     var imagenes = Array.isArray(d.imagenes) ? d.imagenes : (d.imagen ? [d.imagen] : []);
     return {
       id: id,
+      codigo: d.codigo || '',
       titulo: d.titulo || '',
       tipo: d.tipo || 'venta',
       pais: d.pais != null ? d.pais : 'Colombia',
@@ -119,6 +120,7 @@
     imagenes = imagenes.map(function (u) { return urlImagenDrive(u, 'w1200'); });
     var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
     if (p.arriendoPorDia) tipoLabel += ' por día';
+    var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : String(p.id);
 
     var galeriaHtml = '';
     if (imagenes.length > 0) {
@@ -164,8 +166,9 @@
           (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__next" id="lightbox-next" aria-label="Siguiente">›</button>' : '') +
         '</div>' +
         '<div class="detalle-info">' +
-          '<span class="detalle-tipo">' + escapeHtml(tipoLabel) + '</span>' +
-          '<h1 class="detalle-titulo">' + escapeHtml(p.titulo) + '</h1>' +
+        '<span class="detalle-tipo">' + escapeHtml(tipoLabel) + '</span>' +
+        '<h1 class="detalle-titulo">' + escapeHtml(p.titulo) + '</h1>' +
+        '<p class="detalle-codigo">Código Inmueble: ' + escapeHtml(codigo) + '</p>' +
           '<p class="detalle-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
           '<p class="detalle-precio">' + escapeHtml(p.precio || 'Consultar') + '</p>' +
           (p.descripcion ? '<div class="detalle-descripcion">' + escapeHtml(p.descripcion) + '</div>' : '') +

@@ -74,6 +74,9 @@
         <h2>Publicar nueva propiedad</h2>
         <p class="admin-info">Los clientes envían el formulario por WhatsApp; tú subes aquí la información, imágenes y videos.</p>
         <form id="form-nueva-propiedad" class="admin-form">
+          <label class="label" for="adm-id">Código Inmueble (opcional)</label>
+          <input type="text" id="adm-id" name="codigo" class="input" placeholder="Ej: PA-001, APT-23, etc.">
+
           <label class="label" for="adm-titulo">Título *</label>
           <input type="text" id="adm-titulo" name="titulo" class="input" placeholder="Ej: Casa 3 habitaciones con jardín" required>
 
@@ -133,6 +136,10 @@
       <section class="admin-section">
         <h2>Propiedades publicadas</h2>
         <p class="admin-info">Aquí puedes editar o eliminar las propiedades. Con Firebase, los cambios se ven en la web al instante.</p>
+        <div class="admin-buscar-id">
+          <label class="label" for="admin-buscar-id">Buscar por Código Inmueble</label>
+          <input type="text" id="admin-buscar-id" class="input" placeholder="Escribe el Código Inmueble">
+        </div>
         <div id="admin-listado" class="admin-listado"></div>
       </section>
     </main>

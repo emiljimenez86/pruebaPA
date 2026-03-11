@@ -176,10 +176,12 @@
 
     var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
     if (esPorDia) tipoLabel += ' por día';
+    var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : String(p.id);
 
     var cuerpo = imagenHtml +
       '<div class="tarjeta-cuerpo">' +
         '<div class="tarjeta-tipo">' + tipoLabel + '</div>' +
+        '<p class="tarjeta-codigo">Código Inmueble: ' + escapeHtml(codigo) + '</p>' +
         '<h3 class="tarjeta-titulo"><a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-titulo-link">' + escapeHtml(p.titulo) + '</a></h3>' +
         '<p class="tarjeta-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
         '<p class="tarjeta-precio">' + escapeHtml(p.precio || 'Consultar') + '</p>' +
@@ -575,6 +577,7 @@
       var imagenes = Array.isArray(p.imagenes) ? p.imagenes : (p.imagen ? [p.imagen] : []);
       return {
         id: id,
+        codigo: p.codigo || '',
         titulo: p.titulo || '',
         tipo: p.tipo || 'venta',
         pais: p.pais != null ? p.pais : 'Colombia',

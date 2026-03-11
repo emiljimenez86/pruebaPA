@@ -246,6 +246,7 @@
       if (typeof id === 'string' && id.length > 0) id = i + 1;
       var props = [
         '    id: ' + (typeof id === 'number' ? id : (i + 1)),
+        '    codigo: ' + escapeJs(p.codigo || ''),
         '    titulo: ' + escapeJs(p.titulo),
         '    tipo: ' + escapeJs(p.tipo),
         '    pais: ' + escapeJs(p.pais != null ? p.pais : 'Colombia'),
@@ -270,6 +271,14 @@
   function renderListado() {
     if (!listadoEl) return;
     var arr = getPropiedades();
+    var filtroIdInput = document.getElementById('admin-buscar-id');
+    var filtro = (filtroIdInput && filtroIdInput.value) ? filtroIdInput.value.trim().toLowerCase() : '';
+    if (filtro) {
+      arr = arr.filter(function (p) {
+        var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : (p.id != null ? String(p.id) : '');
+        return codigo.toLowerCase().indexOf(filtro) !== -1;
+      });
+    }
     listadoEl.innerHTML = '';
     if (arr.length === 0) {
       listadoEl.innerHTML = '<p class="admin-vacio">No hay propiedades. Añade una arriba.</p>';
@@ -279,11 +288,13 @@
       var div = document.createElement('div');
       div.className = 'admin-item';
       var id = p.id != null ? String(p.id) : String(index);
+      var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : id;
       var img = p.imagen ? '<img src="' + urlImagenDrive(p.imagen).replace(/"/g, '&quot;') + '" alt="" class="admin-item__img" referrerpolicy="no-referrer">' : '<span class="admin-item__sin-img">Sin imagen</span>';
       var pais = p.pais != null ? p.pais : 'Colombia';
       div.innerHTML =
         '<div class="admin-item__preview">' + img + '</div>' +
         '<div class="admin-item__info">' +
+          '<span class="admin-item__codigo">Código Inmueble: ' + escapeHtml(codigo) + '</span><br>' +
           '<strong>' + escapeHtml(p.titulo || 'Sin título') + '</strong> — ' + (p.tipo === 'venta' ? 'Venta' : 'Arriendo') + (p.arriendoPorDia ? ' <span class="admin-item__por-dia">Por día</span>' : '') + '<br>' +
           pais + (p.ciudad ? ', ' + p.ciudad : '') + (p.municipio ? ', ' + p.municipio : '') + (p.precio ? ' · ' + p.precio : '') +
           (p.video ? ' <span class="admin-item__video">🎬 Video</span>' : '') +
@@ -315,6 +326,7 @@
   }
 
   function abrirEdicion(p) {
+    var idEl = document.getElementById('adm-id');
     var tituloEl = document.getElementById('adm-titulo');
     var tipoEl = document.getElementById('adm-tipo');
     var paisInput = document.getElementById('adm-pais');
@@ -330,6 +342,7 @@
     var cancelBtn = document.getElementById('adm-btn-cancelar-edicion');
     if (!tituloEl || !tipoEl) return;
 
+    if (idEl) idEl.value = (p.codigo != null ? p.codigo : '');
     tituloEl.value = p.titulo || '';
     tipoEl.value = p.tipo || 'venta';
     paisInput.value = p.pais != null ? p.pais : 'Colombia';
@@ -387,7 +400,9 @@
     window._adminEditingId = null;
     var submitBtn = document.getElementById('adm-btn-submit');
     var cancelBtn = document.getElementById('adm-btn-cancelar-edicion');
+    var idEl = document.getElementById('adm-id');
     if (formNueva) formNueva.reset();
+    if (idEl) idEl.value = '';
     var paisInput = document.getElementById('adm-pais');
     if (paisInput) paisInput.value = 'Colombia';
     var colombia = (window.PAISES_BANDERAS || []).filter(function (x) { return x.country === 'Colombia'; })[0];
@@ -478,6 +493,7 @@
           var d = doc.data();
           var o = {
             id: doc.id,
+            codigo: d.codigo || '',
             titulo: d.titulo || '',
             tipo: d.tipo || 'venta',
             pais: d.pais != null ? d.pais : 'Colombia',
@@ -524,6 +540,7 @@
       formNueva.removeEventListener('submit', formNueva._submitHandler);
       formNueva._submitHandler = function (e) {
         e.preventDefault();
+        var codigo = (document.getElementById('adm-id') && document.getElementById('adm-id').value) ? document.getElementById('adm-id').value.trim() : '';
         var titulo = (document.getElementById('adm-titulo').value || '').trim();
         var tipo = document.getElementById('adm-tipo').value;
         var pais = (document.getElementById('adm-pais').value || '').trim();
@@ -547,6 +564,7 @@
         var video = normalizarYoutubeUrl(videoRaw);
 
         var data = {
+          codigo: codigo || '',
           titulo: titulo,
           tipo: tipo || 'venta',
           pais: pais || 'Colombia',
@@ -631,6 +649,13 @@
         mostrar(exportarBox);
         exportarText.select();
       };
+    }
+
+    var filtroIdInput = document.getElementById('admin-buscar-id');
+    if (filtroIdInput) {
+      filtroIdInput.addEventListener('input', function () {
+        renderListado();
+      });
     }
   }
 
