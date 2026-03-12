@@ -52,6 +52,7 @@
     var imagenes = Array.isArray(d.imagenes) ? d.imagenes : (d.imagen ? [d.imagen] : []);
     return {
       id: id,
+      estado: d.estado || 'disponible',
       codigo: d.codigo || '',
       titulo: d.titulo || '',
       tipo: d.tipo || 'venta',
@@ -152,7 +153,9 @@
     }
 
     var mensaje = 'Hola, me interesa esta propiedad para ' + (p.tipo === 'venta' ? 'comprar' : 'arrendar') + ':\n\n' +
-      p.titulo + '\n' + ubicacion + '\n\n' + 'Vi el anuncio en la web de Inmobiliaria Pérez Araujo.';
+      p.titulo + '\n' + ubicacion + '\n' +
+      'Código Inmueble: ' + codigo + '\n\n' +
+      'Vi el anuncio en la Aplicación Web de Inmobiliaria Pérez Araujo.';
     var urlWhatsApp = getWhatsAppUrl(mensaje);
 
     main.innerHTML =

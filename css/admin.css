@@ -206,6 +206,9 @@
   flex-direction: column;
   gap: 0.75rem;
 }
+.admin-buscar-id {
+  margin-bottom: 1rem;
+}
 .admin-item {
   display: flex;
   align-items: center;
@@ -243,6 +246,20 @@
   min-width: 0;
   font-size: 0.9rem;
   color: var(--blanco);
+}
+.admin-item__codigo {
+  color: var(--dorado);
+  font-size: 0.85rem;
+}
+.admin-item__estado {
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+.admin-item__estado--disponible {
+  color: #2ecc71;
+}
+.admin-item__estado--arrendada {
+  color: #e67e22;
 }
 .admin-item__info strong {
   display: block;

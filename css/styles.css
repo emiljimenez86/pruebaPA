@@ -445,6 +445,11 @@ input.input {
   color: var(--dorado);
   margin-bottom: 0.5rem;
 }
+.tarjeta-codigo {
+  font-size: 0.85rem;
+  color: var(--dorado-claro);
+  margin: 0 0 0.25rem;
+}
 .tarjeta-video {
   display: inline-block;
   font-size: 0.9rem;
@@ -693,6 +698,11 @@ input.input {
   font-size: 1.1rem;
   color: var(--dorado);
   margin: 0 0 1rem;
+}
+.detalle-codigo {
+  font-size: 0.95rem;
+  color: var(--dorado-claro);
+  margin: 0 0 0.35rem;
 }
 .detalle-descripcion {
   font-size: 1rem;
@@ -1076,16 +1086,11 @@ input.input {
   .grid-propiedades {
     grid-template-columns: repeat(2, 1fr);
   }
+  /* Mantener filtros en una sola columna también en escritorio
+     para que País / Departamento / Municipio no se descuadren */
   .filtros {
-    grid-template-columns: 1fr 1fr auto;
-    align-items: end;
+    grid-template-columns: 1fr;
   }
-  .filtros .label { grid-column: span 1; }
-  .filtros .input { grid-column: span 1; }
-  .filtros #filtro-ciudad { grid-column: 1; }
-  .filtros #filtro-municipio { grid-column: 2; }
-  .filtros #filtro-tipo { grid-column: 1; }
-  .filtros .btn-buscar { grid-column: 1 / -1; max-width: 12rem; }
 }
 
 @media (min-width: 900px) {

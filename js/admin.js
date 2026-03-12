@@ -247,6 +247,7 @@
       var props = [
         '    id: ' + (typeof id === 'number' ? id : (i + 1)),
         '    codigo: ' + escapeJs(p.codigo || ''),
+        '    estado: ' + escapeJs(p.estado || 'disponible'),
         '    titulo: ' + escapeJs(p.titulo),
         '    tipo: ' + escapeJs(p.tipo),
         '    pais: ' + escapeJs(p.pais != null ? p.pais : 'Colombia'),
@@ -291,11 +292,14 @@
       var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : id;
       var img = p.imagen ? '<img src="' + urlImagenDrive(p.imagen).replace(/"/g, '&quot;') + '" alt="" class="admin-item__img" referrerpolicy="no-referrer">' : '<span class="admin-item__sin-img">Sin imagen</span>';
       var pais = p.pais != null ? p.pais : 'Colombia';
+      var estado = p.estado || 'disponible';
+      var estadoTexto = estado === 'arrendada' ? 'Arrendada' : 'Disponible';
       div.innerHTML =
         '<div class="admin-item__preview">' + img + '</div>' +
         '<div class="admin-item__info">' +
           '<span class="admin-item__codigo">Código Inmueble: ' + escapeHtml(codigo) + '</span><br>' +
           '<strong>' + escapeHtml(p.titulo || 'Sin título') + '</strong> — ' + (p.tipo === 'venta' ? 'Venta' : 'Arriendo') + (p.arriendoPorDia ? ' <span class="admin-item__por-dia">Por día</span>' : '') + '<br>' +
+          '<span class="admin-item__estado admin-item__estado--' + (estado === 'arrendada' ? 'arrendada' : 'disponible') + '">' + escapeHtml(estadoTexto) + '</span> · ' +
           pais + (p.ciudad ? ', ' + p.ciudad : '') + (p.municipio ? ', ' + p.municipio : '') + (p.precio ? ' · ' + p.precio : '') +
           (p.video ? ' <span class="admin-item__video">🎬 Video</span>' : '') +
         '</div>' +
@@ -329,6 +333,7 @@
     var idEl = document.getElementById('adm-id');
     var tituloEl = document.getElementById('adm-titulo');
     var tipoEl = document.getElementById('adm-tipo');
+    var estadoEl = document.getElementById('adm-estado');
     var paisInput = document.getElementById('adm-pais');
     var triggerContent = document.getElementById('adm-pais-trigger-content');
     var dptoEl = document.getElementById('adm-departamento');
@@ -345,6 +350,7 @@
     if (idEl) idEl.value = (p.codigo != null ? p.codigo : '');
     tituloEl.value = p.titulo || '';
     tipoEl.value = p.tipo || 'venta';
+    if (estadoEl) estadoEl.value = p.estado || 'disponible';
     paisInput.value = p.pais != null ? p.pais : 'Colombia';
 
     var paises = window.PAISES_BANDERAS || [];
@@ -401,8 +407,10 @@
     var submitBtn = document.getElementById('adm-btn-submit');
     var cancelBtn = document.getElementById('adm-btn-cancelar-edicion');
     var idEl = document.getElementById('adm-id');
+    var estadoEl = document.getElementById('adm-estado');
     if (formNueva) formNueva.reset();
     if (idEl) idEl.value = '';
+    if (estadoEl) estadoEl.value = 'disponible';
     var paisInput = document.getElementById('adm-pais');
     if (paisInput) paisInput.value = 'Colombia';
     var colombia = (window.PAISES_BANDERAS || []).filter(function (x) { return x.country === 'Colombia'; })[0];
@@ -494,6 +502,7 @@
           var o = {
             id: doc.id,
             codigo: d.codigo || '',
+            estado: d.estado || 'disponible',
             titulo: d.titulo || '',
             tipo: d.tipo || 'venta',
             pais: d.pais != null ? d.pais : 'Colombia',
@@ -543,6 +552,7 @@
         var codigo = (document.getElementById('adm-id') && document.getElementById('adm-id').value) ? document.getElementById('adm-id').value.trim() : '';
         var titulo = (document.getElementById('adm-titulo').value || '').trim();
         var tipo = document.getElementById('adm-tipo').value;
+        var estado = (document.getElementById('adm-estado') && document.getElementById('adm-estado').value) || 'disponible';
         var pais = (document.getElementById('adm-pais').value || '').trim();
         var departamento = (document.getElementById('adm-departamento').value || '').trim();
         var municipio = (document.getElementById('adm-municipio').value || '').trim();
@@ -551,6 +561,28 @@
         var imagenesRaw = (document.getElementById('adm-imagenes').value || '').trim();
         var videoRaw = (document.getElementById('adm-video').value || '').trim();
         var arriendoPorDia = (document.getElementById('adm-arriendo-por-dia') && document.getElementById('adm-arriendo-por-dia').checked) && (tipo === 'arriendo');
+
+        var editingId = window._adminEditingId;
+
+        if (!codigo) {
+          alert('Debes ingresar el Código Inmueble (obligatorio).');
+          return;
+        }
+
+        var arrCodigos = getPropiedades();
+        var codLower = codigo.toLowerCase();
+        var codigoRepetido = false;
+        arrCodigos.forEach(function (p) {
+          if (!p) return;
+          if (editingId != null && String(p.id) === String(editingId)) return;
+          if (p.codigo != null && String(p.codigo).trim().toLowerCase() === codLower) {
+            codigoRepetido = true;
+          }
+        });
+        if (codigoRepetido) {
+          alert('Ya existe una propiedad con ese Código Inmueble. Usa uno diferente.');
+          return;
+        }
 
         if (pais === 'Colombia' && (!departamento || !municipio)) {
           alert('Para Colombia debes seleccionar Departamento y Municipio.');
@@ -565,6 +597,7 @@
 
         var data = {
           codigo: codigo || '',
+          estado: estado || 'disponible',
           titulo: titulo,
           tipo: tipo || 'venta',
           pais: pais || 'Colombia',
@@ -577,8 +610,6 @@
         };
         if (video) data.video = video;
         if (arriendoPorDia) data.arriendoPorDia = true;
-
-        var editingId = window._adminEditingId;
 
         if (window.FIREBASE_READY && window.FIREBASE_DB) {
           if (editingId) {

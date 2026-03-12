@@ -149,10 +149,13 @@
     var primeraImgProxy = urlImagenDriveProxy((p.imagenes && p.imagenes[0]) || p.imagen);
     var numFotos = (p.imagenes && p.imagenes.length) || (p.imagen ? 1 : 0);
 
+    var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : String(p.id);
+
     var div = document.createElement('article');
     div.className = 'tarjeta';
     div.setAttribute('data-titulo', p.titulo || '');
     div.setAttribute('data-ubicacion', ubicacion);
+    div.setAttribute('data-codigo', codigo);
 
     var imagenHtml;
     if (primeraImg) {
@@ -176,7 +179,6 @@
 
     var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
     if (esPorDia) tipoLabel += ' por día';
-    var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : String(p.id);
 
     var cuerpo = imagenHtml +
       '<div class="tarjeta-cuerpo">' +
@@ -203,7 +205,9 @@
         '</div>';
     } else {
       var mensaje = 'Hola, me interesa esta propiedad para ' + (p.tipo === 'venta' ? 'comprar' : 'arrendar') + ':\n\n' +
-        p.titulo + '\n' + ubicacion + '\n\n' + 'Vi el anuncio en la web de Inmobiliaria Pérez Araujo.';
+        p.titulo + '\n' + ubicacion + '\n' +
+        'Código Inmueble: ' + codigo + '\n\n' +
+        'Vi el anuncio en la Aplicación Web de Inmobiliaria Pérez Araujo.';
       var urlWhatsApp = getWhatsAppUrl(mensaje);
       cuerpo += '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn" target="_blank" rel="noopener">Consultar por WhatsApp</a>';
     }
@@ -275,17 +279,19 @@
         if (!tarjeta) return;
         var titulo = tarjeta.getAttribute('data-titulo') || '';
         var ubicacion = tarjeta.getAttribute('data-ubicacion') || '';
+        var codigo = tarjeta.getAttribute('data-codigo') || '';
         var fechaEntrada = (tarjeta.querySelector('.tarjeta-fecha-entrada') && tarjeta.querySelector('.tarjeta-fecha-entrada').value) || '';
         var fechaSalida = (tarjeta.querySelector('.tarjeta-fecha-salida') && tarjeta.querySelector('.tarjeta-fecha-salida').value) || '';
         var adultos = (tarjeta.querySelector('.tarjeta-adultos') && tarjeta.querySelector('.tarjeta-adultos').value) || '1';
         var ninos = (tarjeta.querySelector('.tarjeta-ninos') && tarjeta.querySelector('.tarjeta-ninos').value) || '0';
         var mensaje = 'Hola, me interesa esta propiedad para arrendar por día:\n\n' +
-          titulo + '\n' + ubicacion + '\n\n' +
+          titulo + '\n' + ubicacion + '\n' +
+          'Código Inmueble: ' + (codigo || 'Sin código') + '\n\n' +
           '*Fecha de entrada:* ' + (fechaEntrada || 'Por definir') + '\n' +
           '*Fecha de salida:* ' + (fechaSalida || 'Por definir') + '\n' +
           '*Adultos:* ' + adultos + '\n' +
           '*Niños:* ' + ninos + '\n\n' +
-          'Vi el anuncio en la web de Inmobiliaria Pérez Araujo.';
+          'Vi el anuncio en la Aplicación Web de Inmobiliaria Pérez Araujo.';
         window.open(getWhatsAppUrl(mensaje), '_blank', 'noopener');
       });
     }
@@ -464,6 +470,7 @@
 
   function init() {
     function runInit(propiedades) {
+      propiedades = (propiedades || []).filter(function (p) { return !p.estado || p.estado !== 'arrendada'; });
       window.PROPIEDADES = propiedades;
       initVideoYoutube();
 
@@ -578,6 +585,7 @@
       return {
         id: id,
         codigo: p.codigo || '',
+        estado: p.estado || 'disponible',
         titulo: p.titulo || '',
         tipo: p.tipo || 'venta',
         pais: p.pais != null ? p.pais : 'Colombia',
