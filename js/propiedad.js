@@ -25,6 +25,24 @@
     return partes.length ? partes.join(', ') : (p.pais || 'Sin ubicación');
   }
 
+  function formatPrecio(precioRaw) {
+    if (precioRaw == null) return 'Consultar';
+    var s = String(precioRaw).trim();
+    if (!s) return 'Consultar';
+    if (!/\d/.test(s)) return s;
+    var idxBarra = s.indexOf('/');
+    var sufijo = '';
+    if (idxBarra !== -1) {
+      sufijo = ' ' + s.slice(idxBarra).trim();
+    }
+    var soloDigitos = s.replace(/[^\d]/g, '');
+    if (!soloDigitos) return s;
+    var n = parseInt(soloDigitos, 10);
+    if (isNaN(n)) return s;
+    var base = n.toLocaleString('es-CO');
+    return '$ ' + base + sufijo;
+  }
+
   function loadPropiedades() {
     if (window.FIREBASE_READY && window.FIREBASE_DB) {
       return window.FIREBASE_DB.collection('propiedades').orderBy('titulo').get()
@@ -173,7 +191,7 @@
         '<h1 class="detalle-titulo">' + escapeHtml(p.titulo) + '</h1>' +
         '<p class="detalle-codigo">Código Inmueble: ' + escapeHtml(codigo) + '</p>' +
           '<p class="detalle-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
-          '<p class="detalle-precio">' + escapeHtml(p.precio || 'Consultar') + '</p>' +
+          '<p class="detalle-precio">' + escapeHtml(formatPrecio(p.precio)) + '</p>' +
           (p.descripcion ? '<div class="detalle-descripcion">' + escapeHtml(p.descripcion) + '</div>' : '') +
           videoHtml +
           '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn detalle-whatsapp" target="_blank" rel="noopener">Consultar por WhatsApp</a>' +

@@ -32,6 +32,24 @@
     return div.innerHTML;
   }
 
+  function formatPrecio(precioRaw) {
+    if (precioRaw == null) return 'Consultar';
+    var s = String(precioRaw).trim();
+    if (!s) return 'Consultar';
+    if (!/\d/.test(s)) return s;
+    var idxBarra = s.indexOf('/');
+    var sufijo = '';
+    if (idxBarra !== -1) {
+      sufijo = ' ' + s.slice(idxBarra).trim();
+    }
+    var soloDigitos = s.replace(/[^\d]/g, '');
+    if (!soloDigitos) return s;
+    var n = parseInt(soloDigitos, 10);
+    if (isNaN(n)) return s;
+    var base = n.toLocaleString('es-CO');
+    return '$ ' + base + sufijo;
+  }
+
   /** Convierte enlace de Google Drive "compartir" al formato que sirve en <img src>.
    * Usamos thumbnail para evitar 403 cuando se carga desde otro sitio. */
   function urlImagenDrive(url, size) {
@@ -300,7 +318,7 @@
           '<span class="admin-item__codigo">Código Inmueble: ' + escapeHtml(codigo) + '</span><br>' +
           '<strong>' + escapeHtml(p.titulo || 'Sin título') + '</strong> — ' + (p.tipo === 'venta' ? 'Venta' : 'Arriendo') + (p.arriendoPorDia ? ' <span class="admin-item__por-dia">Por día</span>' : '') + '<br>' +
           '<span class="admin-item__estado admin-item__estado--' + (estado === 'arrendada' ? 'arrendada' : 'disponible') + '">' + escapeHtml(estadoTexto) + '</span> · ' +
-          pais + (p.ciudad ? ', ' + p.ciudad : '') + (p.municipio ? ', ' + p.municipio : '') + (p.precio ? ' · ' + p.precio : '') +
+          pais + (p.ciudad ? ', ' + p.ciudad : '') + (p.municipio ? ', ' + p.municipio : '') + (p.precio ? ' · ' + formatPrecio(p.precio) : '') +
           (p.video ? ' <span class="admin-item__video">🎬 Video</span>' : '') +
         '</div>' +
         '<button type="button" class="btn btn--sec admin-item__edit" data-id="' + escapeHtml(id) + '" data-index="' + index + '">Editar</button>' +

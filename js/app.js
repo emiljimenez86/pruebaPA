@@ -140,6 +140,26 @@
     return partes.length ? partes.join(', ') : (p.pais || 'Sin ubicación');
   }
 
+  function formatPrecio(precioRaw) {
+    if (precioRaw == null) return 'Consultar';
+    var s = String(precioRaw).trim();
+    if (!s) return 'Consultar';
+    // Si ya parece un texto sin números, dejarlo igual
+    if (!/\d/.test(s)) return s;
+    // Detectar posible sufijo tipo "/ mes"
+    var idxBarra = s.indexOf('/');
+    var sufijo = '';
+    if (idxBarra !== -1) {
+      sufijo = ' ' + s.slice(idxBarra).trim();
+    }
+    var soloDigitos = s.replace(/[^\d]/g, '');
+    if (!soloDigitos) return s;
+    var n = parseInt(soloDigitos, 10);
+    if (isNaN(n)) return s;
+    var base = n.toLocaleString('es-CO');
+    return '$ ' + base + sufijo;
+  }
+
   function renderTarjeta(p) {
     var esPorDia = p.tipo === 'arriendo' && p.arriendoPorDia === true;
     var ubicacion = ubicacionTexto(p);
@@ -186,7 +206,7 @@
         '<p class="tarjeta-codigo">Código Inmueble: ' + escapeHtml(codigo) + '</p>' +
         '<h3 class="tarjeta-titulo"><a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-titulo-link">' + escapeHtml(p.titulo) + '</a></h3>' +
         '<p class="tarjeta-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
-        '<p class="tarjeta-precio">' + escapeHtml(p.precio || 'Consultar') + '</p>' +
+        '<p class="tarjeta-precio">' + escapeHtml(formatPrecio(p.precio)) + '</p>' +
         '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-ver-mas">Ver más fotos y video</a>' +
         videoHtml;
 
