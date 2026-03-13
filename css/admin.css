@@ -315,6 +315,29 @@
   background: rgba(231, 76, 60, 0.35);
 }
 
+.btn--excel {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.4rem;
+  background: #107C41;
+  border: 1px solid #0b5c32;
+  color: #ffffff;
+}
+.btn--excel:hover {
+  background: #0b5c32;
+}
+.btn-excel-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+}
+.btn-excel-icon svg {
+  display: block;
+}
+.btn-excel-text {
+  white-space: nowrap;
+}
+
 /* Botón Instalar app en el panel: siempre visible (salvo que el script añada .oculto) */
 .admin-body #admin-install-btn {
   display: flex !important;

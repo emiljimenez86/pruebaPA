@@ -75,7 +75,7 @@
         <p class="admin-info">Los clientes envían el formulario por WhatsApp; tú subes aquí la información, imágenes y videos.</p>
         <form id="form-nueva-propiedad" class="admin-form">
           <label class="label" for="adm-id">Código Inmueble *</label>
-          <input type="text" id="adm-id" name="codigo" class="input" placeholder="Ej: PA-001, APT-23, etc." required>
+          <input type="text" id="adm-id" name="codigo" class="input" placeholder="Se generará automáticamente" required readonly>
 
           <label class="label" for="adm-titulo">Título *</label>
           <input type="text" id="adm-titulo" name="titulo" class="input" placeholder="Ej: Casa 3 habitaciones con jardín" required>
@@ -92,6 +92,15 @@
             <option value="disponible">Disponible</option>
             <option value="arrendada">Arrendada</option>
           </select>
+
+          <label class="label" for="adm-aliado-nombre">Aliado (nombre y apellidos)</label>
+          <input type="text" id="adm-aliado-nombre" name="aliado_nombre" class="input" placeholder="Nombre completo del aliado comisionista">
+
+          <label class="label" for="adm-aliado-documento">Documento / ID del aliado</label>
+          <input type="text" id="adm-aliado-documento" name="aliado_documento" class="input" placeholder="Número de documento del aliado">
+
+          <label class="label" for="adm-propietario-nombre">Propietario del inmueble</label>
+          <input type="text" id="adm-propietario-nombre" name="propietario_nombre" class="input" placeholder="Nombre del propietario (uso interno)">
 
           <label class="checkbox-label admin-arriendo-por-dia-wrap oculto" id="adm-arriendo-por-dia-wrap">
             <input type="checkbox" name="arriendo_por_dia" id="adm-arriendo-por-dia" value="1">
@@ -142,9 +151,23 @@
       <section class="admin-section">
         <h2>Propiedades publicadas</h2>
         <p class="admin-info">Aquí puedes editar o eliminar las propiedades. Con Firebase, los cambios se ven en la web al instante.</p>
+        <p class="admin-info">También puedes exportar todas las propiedades a Excel (archivo CSV) para llevar un control interno.</p>
         <div class="admin-buscar-id">
           <label class="label" for="admin-buscar-id">Buscar por Código Inmueble</label>
           <input type="text" id="admin-buscar-id" class="input" placeholder="Escribe el Código Inmueble">
+        </div>
+        <div class="admin-actions">
+          <button type="button" class="btn btn--excel" id="btn-exportar-csv">
+            <span class="btn-excel-icon" aria-hidden="true">
+              <svg width="18" height="18" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <rect x="3" y="3" width="18" height="18" rx="2" ry="2" fill="#185C37"/>
+                <rect x="5" y="5" width="14" height="14" rx="1" ry="1" fill="#21A366"/>
+                <rect x="7" y="7" width="10" height="10" rx="1" ry="1" fill="#107C41"/>
+                <path d="M10 9L8.5 12L10 15H8.7L7.8 13.1L6.9 15H5.6L7.1 12L5.6 9H6.9L7.8 10.9L8.7 9H10Z" fill="white"/>
+              </svg>
+            </span>
+            <span class="btn-excel-text">Exportar a Excel (CSV)</span>
+          </button>
         </div>
         <div id="admin-listado" class="admin-listado"></div>
       </section>

@@ -266,6 +266,9 @@
         '    id: ' + (typeof id === 'number' ? id : (i + 1)),
         '    codigo: ' + escapeJs(p.codigo || ''),
         '    estado: ' + escapeJs(p.estado || 'disponible'),
+        '    aliadoNombre: ' + escapeJs(p.aliadoNombre || ''),
+        '    aliadoDocumento: ' + escapeJs(p.aliadoDocumento || ''),
+        '    propietarioNombre: ' + escapeJs(p.propietarioNombre || ''),
         '    titulo: ' + escapeJs(p.titulo),
         '    tipo: ' + escapeJs(p.tipo),
         '    pais: ' + escapeJs(p.pais != null ? p.pais : 'Colombia'),
@@ -287,6 +290,79 @@
     return lineas.join('\n');
   }
 
+  function generarCSV() {
+    var arr = getPropiedades();
+    if (!arr || !arr.length) return '';
+
+    // En la mayoría de instalaciones de Excel en español el separador por defecto es ;
+    var SEP = ';';
+
+    var headers = [
+      'codigo',
+      'estado',
+      'aliadoNombre',
+      'aliadoDocumento',
+      'propietarioNombre',
+      'titulo',
+      'tipo',
+      'pais',
+      'ciudad',
+      'municipio',
+      'precio',
+      'arriendoPorDia'
+    ];
+    function csvEscape(value) {
+      if (value == null) return '';
+      var s = String(value);
+      if (s.indexOf('"') !== -1 || s.indexOf(SEP) !== -1 || s.indexOf('\n') !== -1 || s.indexOf('\r') !== -1) {
+        return '"' + s.replace(/"/g, '""') + '"';
+      }
+      return s;
+    }
+    var rows = [headers.map(csvEscape).join(SEP)];
+    arr.forEach(function (p) {
+      var row = [
+        p.codigo || '',
+        p.estado || 'disponible',
+        p.aliadoNombre || '',
+        p.aliadoDocumento || '',
+        p.propietarioNombre || '',
+        p.titulo || '',
+        p.tipo || '',
+        p.pais != null ? p.pais : 'Colombia',
+        p.ciudad || '',
+        p.municipio || '',
+        p.precio || '',
+        p.arriendoPorDia === true ? '1' : ''
+      ];
+      rows.push(row.map(csvEscape).join(SEP));
+    });
+    return rows.join('\n');
+  }
+
+  function calcularSiguienteCodigo() {
+    var arr = getPropiedades();
+    var maxNum = 0;
+    arr.forEach(function (p) {
+      if (!p || !p.codigo) return;
+      var c = String(p.codigo).trim();
+      var m = c.match(/^PA(\d+)$/i);
+      if (!m) return;
+      var n = parseInt(m[1], 10);
+      if (!isNaN(n) && n > maxNum) maxNum = n;
+    });
+    var siguiente = maxNum + 1;
+    var numStr = String(siguiente).padStart(3, '0');
+    return 'PA' + numStr;
+  }
+
+  function setCodigoPorDefecto() {
+    if (window._adminEditingId) return;
+    var idEl = document.getElementById('adm-id');
+    if (!idEl) return;
+    idEl.value = calcularSiguienteCodigo();
+  }
+
   function renderListado() {
     if (!listadoEl) return;
     var arr = getPropiedades();
@@ -301,6 +377,7 @@
     listadoEl.innerHTML = '';
     if (arr.length === 0) {
       listadoEl.innerHTML = '<p class="admin-vacio">No hay propiedades. Añade una arriba.</p>';
+      setCodigoPorDefecto();
       return;
     }
     arr.forEach(function (p, index) {
@@ -325,6 +402,7 @@
         '<button type="button" class="btn btn--danger admin-item__del" data-id="' + escapeHtml(id) + '">Eliminar</button>';
       listadoEl.appendChild(div);
     });
+    setCodigoPorDefecto();
   }
 
   function borrarPorId(id) {
@@ -352,6 +430,9 @@
     var tituloEl = document.getElementById('adm-titulo');
     var tipoEl = document.getElementById('adm-tipo');
     var estadoEl = document.getElementById('adm-estado');
+    var aliadoNombreEl = document.getElementById('adm-aliado-nombre');
+    var aliadoDocumentoEl = document.getElementById('adm-aliado-documento');
+    var propietarioNombreEl = document.getElementById('adm-propietario-nombre');
     var paisInput = document.getElementById('adm-pais');
     var triggerContent = document.getElementById('adm-pais-trigger-content');
     var dptoEl = document.getElementById('adm-departamento');
@@ -369,6 +450,9 @@
     tituloEl.value = p.titulo || '';
     tipoEl.value = p.tipo || 'venta';
     if (estadoEl) estadoEl.value = p.estado || 'disponible';
+    if (aliadoNombreEl) aliadoNombreEl.value = p.aliadoNombre || '';
+    if (aliadoDocumentoEl) aliadoDocumentoEl.value = p.aliadoDocumento || '';
+    if (propietarioNombreEl) propietarioNombreEl.value = p.propietarioNombre || '';
     paisInput.value = p.pais != null ? p.pais : 'Colombia';
 
     var paises = window.PAISES_BANDERAS || [];
@@ -426,9 +510,15 @@
     var cancelBtn = document.getElementById('adm-btn-cancelar-edicion');
     var idEl = document.getElementById('adm-id');
     var estadoEl = document.getElementById('adm-estado');
+    var aliadoNombreEl = document.getElementById('adm-aliado-nombre');
+    var aliadoDocumentoEl = document.getElementById('adm-aliado-documento');
+    var propietarioNombreEl = document.getElementById('adm-propietario-nombre');
     if (formNueva) formNueva.reset();
     if (idEl) idEl.value = '';
     if (estadoEl) estadoEl.value = 'disponible';
+    if (aliadoNombreEl) aliadoNombreEl.value = '';
+    if (aliadoDocumentoEl) aliadoDocumentoEl.value = '';
+    if (propietarioNombreEl) propietarioNombreEl.value = '';
     var paisInput = document.getElementById('adm-pais');
     if (paisInput) paisInput.value = 'Colombia';
     var colombia = (window.PAISES_BANDERAS || []).filter(function (x) { return x.country === 'Colombia'; })[0];
@@ -442,6 +532,7 @@
     var check = document.getElementById('adm-arriendo-por-dia');
     if (wrap) wrap.classList.add('oculto');
     if (check) check.checked = false;
+    setCodigoPorDefecto();
     if (submitBtn) submitBtn.textContent = 'Añadir propiedad';
     if (cancelBtn) cancelBtn.classList.add('oculto');
   }
@@ -521,6 +612,9 @@
             id: doc.id,
             codigo: d.codigo || '',
             estado: d.estado || 'disponible',
+            aliadoNombre: d.aliadoNombre || '',
+            aliadoDocumento: d.aliadoDocumento || '',
+            propietarioNombre: d.propietarioNombre || '',
             titulo: d.titulo || '',
             tipo: d.tipo || 'venta',
             pais: d.pais != null ? d.pais : 'Colombia',
@@ -571,6 +665,9 @@
         var titulo = (document.getElementById('adm-titulo').value || '').trim();
         var tipo = document.getElementById('adm-tipo').value;
         var estado = (document.getElementById('adm-estado') && document.getElementById('adm-estado').value) || 'disponible';
+        var aliadoNombre = (document.getElementById('adm-aliado-nombre') && document.getElementById('adm-aliado-nombre').value) ? document.getElementById('adm-aliado-nombre').value.trim() : '';
+        var aliadoDocumento = (document.getElementById('adm-aliado-documento') && document.getElementById('adm-aliado-documento').value) ? document.getElementById('adm-aliado-documento').value.trim() : '';
+        var propietarioNombre = (document.getElementById('adm-propietario-nombre') && document.getElementById('adm-propietario-nombre').value) ? document.getElementById('adm-propietario-nombre').value.trim() : '';
         var pais = (document.getElementById('adm-pais').value || '').trim();
         var departamento = (document.getElementById('adm-departamento').value || '').trim();
         var municipio = (document.getElementById('adm-municipio').value || '').trim();
@@ -616,6 +713,9 @@
         var data = {
           codigo: codigo || '',
           estado: estado || 'disponible',
+          aliadoNombre: aliadoNombre || '',
+          aliadoDocumento: aliadoDocumento || '',
+          propietarioNombre: propietarioNombre || '',
           titulo: titulo,
           tipo: tipo || 'venta',
           pais: pais || 'Colombia',
@@ -689,6 +789,7 @@
       var check = document.getElementById('adm-arriendo-por-dia');
       if (wrap) wrap.classList.add('oculto');
       if (check) check.checked = false;
+      setCodigoPorDefecto();
     }
 
     var btnExportar = document.getElementById('btn-exportar');
@@ -697,6 +798,27 @@
         exportarText.value = generarDatosJs();
         mostrar(exportarBox);
         exportarText.select();
+      };
+    }
+
+    var btnExportarCsv = document.getElementById('btn-exportar-csv');
+    if (btnExportarCsv) {
+      btnExportarCsv.onclick = function () {
+        var csv = generarCSV();
+        if (!csv) {
+          alert('No hay propiedades para exportar.');
+          return;
+        }
+        var blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+        var url = URL.createObjectURL(blob);
+        var a = document.createElement('a');
+        a.href = url;
+        var fecha = new Date().toISOString().slice(0, 10);
+        a.download = 'propiedades_' + fecha + '.csv';
+        document.body.appendChild(a);
+        a.click();
+        document.body.removeChild(a);
+        URL.revokeObjectURL(url);
       };
     }
 
