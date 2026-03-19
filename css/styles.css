@@ -71,6 +71,16 @@ a:hover, a:focus-visible {
   display: block;
   text-align: center;
 }
+.header__nit {
+  margin: 0;
+  color: var(--blanco);
+  font-weight: 700;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 0.95rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 10px rgba(245, 245, 245, 0.18);
+  text-transform: uppercase;
+}
 .logo {
   max-height: 220px;
   width: auto;
@@ -121,6 +131,15 @@ a:hover, a:focus-visible {
   font-size: 1.75rem;
   color: var(--dorado);
   margin: 0 0 0.5rem;
+}
+.hero .hero__nit {
+  margin: 0;
+  color: var(--blanco);
+  font-weight: 700;
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1rem;
+  letter-spacing: 0.03em;
+  text-shadow: 0 0 10px rgba(245, 245, 245, 0.18);
 }
 .hero p {
   margin: 0;
@@ -373,7 +392,20 @@ input.input {
   border: 1px solid rgba(201, 162, 39, 0.25);
   border-radius: var(--radio);
   overflow: hidden;
-  box-shadow: var(--sombra);
+  box-shadow:
+    0 10px 25px rgba(0, 0, 0, 0.8),
+    0 0 0 1px rgba(201, 162, 39, 0.15);
+  transform: translate3d(0, 0, 0);
+  transition: transform 0.2s ease-out, box-shadow 0.2s ease-out, border-color 0.2s ease-out;
+}
+.tarjeta:hover,
+.tarjeta:focus-within {
+  transform: translate3d(0, -6px, 0);
+  box-shadow:
+    0 18px 35px rgba(0, 0, 0, 0.9),
+    0 0 0 1px rgba(201, 162, 39, 0.35),
+    0 0 24px rgba(201, 162, 39, 0.25);
+  border-color: rgba(201, 162, 39, 0.65);
 }
 .tarjeta-imagen {
   aspect-ratio: 16/10;
@@ -1067,12 +1099,17 @@ input.input {
     flex-direction: row;
     justify-content: center;
     position: relative !important;
+    flex-wrap: wrap; /* Permite que el NIT baje debajo del logo en escritorio */
   }
   .header .nav {
     position: absolute;
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
+  }
+  .header__nit {
+    flex-basis: 100%;
+    text-align: center;
   }
   .logo {
     max-height: 200px;

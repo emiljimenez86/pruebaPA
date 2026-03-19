@@ -126,7 +126,13 @@
         if (filtros.municipio && p.municipio !== filtros.municipio) return false;
       }
 
-      if (filtros.tipo && p.tipo !== filtros.tipo) return false;
+      if (filtros.tipo) {
+        if (filtros.tipo === 'arriendo-dia') {
+          if (!(p.tipo === 'arriendo' && p.arriendoPorDia === true)) return false;
+        } else {
+          if (p.tipo !== filtros.tipo) return false;
+        }
+      }
 
       return true;
     });
