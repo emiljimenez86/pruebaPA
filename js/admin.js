@@ -606,6 +606,7 @@
     /* Video institucional (Firestore config/institutional) */
     (function initInstitucionalVideo() {
       var input = document.getElementById('adm-institucional-video');
+      var verticalEl = document.getElementById('adm-institucional-vertical');
       var form = document.getElementById('form-institucional-video');
       var estado = document.getElementById('adm-institucional-estado');
       if (!input || !form) return;
@@ -623,6 +624,9 @@
             var d = typeof doc.data === 'function' ? doc.data() : null;
             if (d && d.videoUrl != null && String(d.videoUrl).trim() !== '') {
               input.value = String(d.videoUrl).trim();
+            }
+            if (verticalEl) {
+              verticalEl.checked = !!(d && d.videoVertical === true);
             }
           })
           .catch(function (err) {
@@ -650,8 +654,10 @@
           setEstado('La URL no parece válida.');
           return;
         }
+        var vert = !!(verticalEl && verticalEl.checked);
         window.FIREBASE_DB.collection('config').doc('institutional').set({
-          videoUrl: raw
+          videoUrl: raw,
+          videoVertical: vert
         }, { merge: true }).then(function () {
           loadInstitucionalFromServer();
           setEstado(raw

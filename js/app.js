@@ -90,7 +90,7 @@
   function renderVideoInstitucionalDefault(wrap) {
     if (!wrap) return;
     wrap.innerHTML = '';
-    wrap.classList.remove('video-embed-aspect');
+    wrap.classList.remove('video-embed-aspect', 'video-embed-aspect--portrait');
     var v = document.createElement('video');
     v.className = 'video-local__video';
     v.setAttribute('controls', '');
@@ -115,7 +115,7 @@
     var wrap = document.getElementById('video-institucional-wrap');
     if (!wrap) return;
 
-    function aplicar(url) {
+    function aplicar(url, forcePortrait) {
       var u = (url || '').trim();
       if (!u) {
         renderVideoInstitucionalDefault(wrap);
@@ -129,7 +129,8 @@
         iframeClass: 'video-youtube__iframe',
         videoClass: 'video-local__video',
         title: tt('video_local.aria'),
-        linkText: tt('video_embed.open_tab')
+        linkText: tt('video_embed.open_tab'),
+        forcePortrait: forcePortrait === true
       });
       if (window.I18n && typeof I18n.applyDom === 'function') I18n.applyDom(wrap);
     }
@@ -143,7 +144,7 @@
         .then(function (doc) {
           var d = typeof doc.data === 'function' ? doc.data() : null;
           var urlDb = d && d.videoUrl != null ? String(d.videoUrl).trim() : '';
-          aplicar(urlDb);
+          aplicar(urlDb, d && d.videoVertical === true);
         })
         .catch(function () {
           renderVideoInstitucionalDefault(wrap);

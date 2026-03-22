@@ -447,6 +447,17 @@ a:hover, a:focus-visible {
   border: none;
   object-fit: contain;
 }
+
+/* Video institucional vertical (Shorts, Reels, TikTok, o forzado desde el panel) */
+.video-embed-aspect.video-embed-aspect--portrait {
+  aspect-ratio: 9 / 16;
+  max-width: min(100%, 400px);
+  margin-left: auto;
+  margin-right: auto;
+}
+.video-local__wrap:has(.video-embed-aspect--portrait) {
+  max-width: min(100%, 420px);
+}
 .video-embed__iframe {
   display: block;
 }

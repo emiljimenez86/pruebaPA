@@ -12,7 +12,7 @@
   <link rel="icon" type="image/png" href="../image/logo/PerezAraujoLogo.png">
   <link rel="apple-touch-icon" href="../image/logo/PerezAraujoLogo.png">
   <link rel="manifest" href="../manifest2.json">
-  <link rel="stylesheet" href="../css/styles.css?v=2">
+  <link rel="stylesheet" href="../css/styles.css?v=3">
   <link rel="stylesheet" href="../css/admin.css">
 </head>
 <body class="admin-body">
@@ -76,6 +76,10 @@
         <form id="form-institucional-video" class="admin-form" novalidate>
           <label class="label" for="adm-institucional-video">URL del video (opcional)</label>
           <input type="text" id="adm-institucional-video" class="input" inputmode="url" autocomplete="off" placeholder="Pega el enlace completo (Drive, YouTube, etc.)">
+          <label class="checkbox-label" for="adm-institucional-vertical">
+            <input type="checkbox" id="adm-institucional-vertical" name="video_vertical">
+            <span>Formato vertical (9:16), tipo Shorts / Reel / TikTok — también para Drive u otros si el video es vertical</span>
+          </label>
           <button type="submit" class="btn btn-enviar">Guardar video institucional</button>
         </form>
         <p class="admin-hint" id="adm-institucional-estado"></p>
