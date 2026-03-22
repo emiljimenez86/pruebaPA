@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  function tt(key, vars) {
+    return window.I18n && typeof I18n.t === 'function' ? I18n.t(key, vars) : key;
+  }
+
   var WHATSAPP_NUMERO = '573145000000';
 
   function getWhatsAppUrl(mensaje) {
@@ -22,14 +26,17 @@
     if (p.municipio && p.municipio !== p.ciudad) partes.push(p.municipio);
     if (p.ciudad) partes.push(p.ciudad);
     if (p.pais && partes.length === 0) partes.push(p.pais);
-    return partes.length ? partes.join(', ') : (p.pais || 'Sin ubicación');
+    return partes.length ? partes.join(', ') : (p.pais || tt('tarjeta.sin_ubicacion'));
   }
 
   function formatPrecio(precioRaw) {
-    if (precioRaw == null) return 'Consultar';
+    if (precioRaw == null) return tt('tarjeta.consultar_precio');
     var s = String(precioRaw).trim();
-    if (!s) return 'Consultar';
-    if (!/\d/.test(s)) return s;
+    if (!s) return tt('tarjeta.consultar_precio');
+    if (!/\d/.test(s)) {
+      if (/^consultar$/i.test(s.trim())) return tt('tarjeta.consultar_precio');
+      return s;
+    }
     var idxBarra = s.indexOf('/');
     var sufijo = '';
     if (idxBarra !== -1) {
@@ -137,18 +144,18 @@
     var ubicacion = ubicacionTexto(p);
     var imagenes = p.imagenes && p.imagenes.length > 0 ? p.imagenes : (p.imagen ? [p.imagen] : []);
     imagenes = imagenes.map(function (u) { return urlImagenDrive(u, 'w1200'); });
-    var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
-    if (p.arriendoPorDia) tipoLabel += ' por día';
+    var tipoLabel = p.tipo === 'venta' ? tt('tarjeta.venta') : tt('tarjeta.arriendo');
+    if (p.arriendoPorDia) tipoLabel += tt('tarjeta.por_dia');
     var codigo = (p.codigo != null && String(p.codigo).trim() !== '') ? String(p.codigo) : String(p.id);
 
     var galeriaHtml = '';
     if (imagenes.length > 0) {
-      galeriaHtml = '<div class="detalle-galeria" role="region" aria-label="Galería de fotos">' +
+      galeriaHtml = '<div class="detalle-galeria" role="region" aria-label="' + escapeAttr(tt('detalle.galeria_aria')) + '">' +
         '<div class="detalle-galeria__principal">' +
-          '<img class="detalle-galeria__img" id="detalle-galeria-img" src="' + escapeAttr(imagenes[0]) + '" alt="' + escapeHtml(p.titulo) + '" title="Toca para ver más grande" referrerpolicy="no-referrer">' +
+          '<img class="detalle-galeria__img" id="detalle-galeria-img" src="' + escapeAttr(imagenes[0]) + '" alt="' + escapeHtml(p.titulo) + '" title="' + escapeAttr(tt('detalle.toca_amp')) + '" referrerpolicy="no-referrer">' +
           (imagenes.length > 1 ? (
-            '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--prev" id="galeria-prev" aria-label="Foto anterior">‹</button>' +
-            '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--next" id="galeria-next" aria-label="Siguiente foto">›</button>' +
+            '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--prev" id="galeria-prev" aria-label="' + escapeAttr(tt('detalle.foto_ant')) + '">‹</button>' +
+            '<button type="button" class="detalle-galeria__btn detalle-galeria__btn--next" id="galeria-next" aria-label="' + escapeAttr(tt('detalle.foto_sig')) + '">›</button>' +
             '<div class="detalle-galeria__dots" id="galeria-dots"></div>'
           ) : '') +
         '</div>' +
@@ -160,41 +167,40 @@
     var videoHtml = '';
     var videoId = extraerIdYoutube(p.video);
     if (videoId) {
-      videoHtml = '<section class="detalle-video" aria-label="Video">' +
-        '<h3>Video</h3>' +
+      videoHtml = '<section class="detalle-video" aria-label="' + escapeAttr(tt('detalle.video')) + '">' +
+        '<h3>' + escapeHtml(tt('detalle.video')) + '</h3>' +
         '<div class="detalle-video__wrap">' +
-          '<iframe src="https://www.youtube.com/embed/' + escapeAttr(videoId) + '?rel=0" title="Video de la propiedad" allowfullscreen class="detalle-video__iframe"></iframe>' +
+          '<iframe src="https://www.youtube.com/embed/' + escapeAttr(videoId) + '?rel=0" title="' + escapeAttr(tt('detalle.video')) + '" allowfullscreen class="detalle-video__iframe"></iframe>' +
         '</div>' +
         '</section>';
     } else if (p.video) {
-      videoHtml = '<section class="detalle-video"><h3>Video</h3><a href="' + escapeAttr(p.video) + '" target="_blank" rel="noopener" class="btn">🎬 Ver video</a></section>';
+      videoHtml = '<section class="detalle-video"><h3>' + escapeHtml(tt('detalle.video')) + '</h3><a href="' + escapeAttr(p.video) + '" target="_blank" rel="noopener" class="btn">' + escapeHtml(tt('detalle.ver_video_ext')) + '</a></section>';
     }
 
-    var mensaje = 'Hola, me interesa esta propiedad para ' + (p.tipo === 'venta' ? 'comprar' : 'arrendar') + ':\n\n' +
-      p.titulo + '\n' + ubicacion + '\n' +
-      'Código Inmueble: ' + codigo + '\n\n' +
-      'Vi el anuncio en la Aplicación Web de Inmobiliaria Pérez Araujo.';
+    var intro = p.tipo === 'venta' ? tt('msg.wa_prop_sale') : tt('msg.wa_prop_rent');
+    var mensaje = intro + p.titulo + '\n' + ubicacion + '\n' +
+      tt('msg.wa_prop_codigo') + codigo + tt('msg.wa_prop_footer');
     var urlWhatsApp = getWhatsAppUrl(mensaje);
 
     main.innerHTML =
       '<div class="detalle-wrap">' +
-        '<a href="index.html" class="detalle-volver">← Volver al listado</a>' +
+        '<a href="index.html" class="detalle-volver">' + escapeHtml(tt('detalle.volver')) + '</a>' +
         galeriaHtml +
         '<div id="detalle-lightbox" class="detalle-lightbox oculto" aria-hidden="true">' +
-          '<button type="button" class="detalle-lightbox__cerrar" id="lightbox-cerrar" aria-label="Cerrar">×</button>' +
-          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__prev" id="lightbox-prev" aria-label="Anterior">‹</button>' : '') +
+          '<button type="button" class="detalle-lightbox__cerrar" id="lightbox-cerrar" aria-label="' + escapeAttr(tt('detalle.cerrar')) + '">×</button>' +
+          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__prev" id="lightbox-prev" aria-label="' + escapeAttr(tt('detalle.amp_ant')) + '">‹</button>' : '') +
           '<img class="detalle-lightbox__img" id="lightbox-img" src="" alt="" referrerpolicy="no-referrer">' +
-          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__next" id="lightbox-next" aria-label="Siguiente">›</button>' : '') +
+          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__next" id="lightbox-next" aria-label="' + escapeAttr(tt('detalle.amp_sig')) + '">›</button>' : '') +
         '</div>' +
         '<div class="detalle-info">' +
         '<span class="detalle-tipo">' + escapeHtml(tipoLabel) + '</span>' +
         '<h1 class="detalle-titulo">' + escapeHtml(p.titulo) + '</h1>' +
-        '<p class="detalle-codigo">Código Inmueble: ' + escapeHtml(codigo) + '</p>' +
+        '<p class="detalle-codigo">' + escapeHtml(tt('detalle.codigo')) + escapeHtml(codigo) + '</p>' +
           '<p class="detalle-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
           '<p class="detalle-precio">' + escapeHtml(formatPrecio(p.precio)) + '</p>' +
           (p.descripcion ? '<div class="detalle-descripcion">' + escapeHtml(p.descripcion) + '</div>' : '') +
           videoHtml +
-          '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn detalle-whatsapp" target="_blank" rel="noopener">Consultar por WhatsApp</a>' +
+          '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn detalle-whatsapp" target="_blank" rel="noopener">' + escapeHtml(tt('detalle.whatsapp')) + '</a>' +
         '</div>' +
       '</div>';
     if (typeof document.title !== 'undefined') {
@@ -226,7 +232,7 @@
         var dot = document.createElement('button');
         dot.type = 'button';
         dot.className = 'detalle-galeria__dot' + (i === 0 ? ' detalle-galeria__dot--active' : '');
-        dot.setAttribute('aria-label', 'Ir a foto ' + (i + 1));
+        dot.setAttribute('aria-label', tt('detalle.ir_foto', { n: i + 1 }));
         dot.setAttribute('data-index', String(i));
         dotsEl.appendChild(dot);
       }

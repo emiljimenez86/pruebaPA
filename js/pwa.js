@@ -12,15 +12,49 @@
       window.navigator.standalone === true;
   }
 
+  function isLocalDevHost() {
+    var h = (typeof location !== 'undefined' && location.hostname) || '';
+    return h === 'localhost' || h === '127.0.0.1' || h === '[::1]';
+  }
+
   function registerServiceWorker() {
-    if ('serviceWorker' in navigator) {
-      window.addEventListener('load', function () {
-        navigator.serviceWorker.register('./sw.js').catch(function (err) {
+    if (!('serviceWorker' in navigator)) return;
+
+    /* Si aún no hay controlador, el primer controllerchange es la instalación (no recargar). El siguiente = actualización. */
+    var ignoreNextControllerChange = !navigator.serviceWorker.controller;
+    navigator.serviceWorker.addEventListener('controllerchange', function () {
+      if (ignoreNextControllerChange) {
+        ignoreNextControllerChange = false;
+        return;
+      }
+      window.location.reload();
+    });
+
+    function checkUpdates(reg) {
+      if (reg && typeof reg.update === 'function') {
+        reg.update().catch(function () {});
+      }
+    }
+
+    window.addEventListener('load', function () {
+      /* En localhost no registramos SW: F5 basta para ver cambios. */
+      if (isLocalDevHost()) return;
+
+      /* updateViaCache: 'none' evita que Chrome sirva un sw.js viejo desde caché HTTP. */
+      navigator.serviceWorker
+        .register('./sw.js', { updateViaCache: 'none' })
+        .then(function (reg) {
+          checkUpdates(reg);
+          /* Al volver a la pestaña, comprobar si hay SW nuevo (Chrome a veces tarda). */
+          document.addEventListener('visibilitychange', function () {
+            if (!document.hidden) checkUpdates(reg);
+          });
+        })
+        .catch(function (err) {
           // eslint-disable-next-line no-console
           console.warn('SW registro falló', err);
         });
-      });
-    }
+    });
   }
 
   function setupBeforeInstallPrompt() {
@@ -49,10 +83,11 @@
         });
       } else {
         var isAndroid = /android/i.test(window.navigator.userAgent || '');
+        var ta = window.I18n && typeof I18n.t === 'function' ? I18n.t.bind(I18n) : function (k) { return k; };
         if (isAndroid) {
-          window.alert('No se puede usar el instalador automático aquí.\n\nPara añadir al inicio: menú del navegador (⋮) → «Añadir a pantalla de inicio» o «Instalar aplicación».');
+          window.alert(ta('pwa.alert_android'));
         } else {
-          window.alert('Instalación disponible en Chrome para Android. En este dispositivo usa la web en el navegador.');
+          window.alert(ta('pwa.alert_other'));
         }
       }
     });

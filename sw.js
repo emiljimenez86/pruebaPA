@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inmobiliaria-perez-araujo-v3';
+const CACHE_NAME = 'inmobiliaria-perez-araujo-v7';
 
 const APP_SHELL = [
   './',
@@ -11,6 +11,7 @@ const APP_SHELL = [
   './js/pwa.js',
   './js/firebase-app.js',
   './js/i18n.js',
+  './js/video-embed.js',
   './image/logo/PerezAraujoLogo.png'
 ];
 
@@ -37,6 +38,40 @@ self.addEventListener('activate', (event) => {
   self.clients.claim();
 });
 
+/** Opciones de fetch: sin esto Chrome reutiliza caché HTTP y parece que “nunca actualiza”. */
+function fetchAlwaysRevalidate(request) {
+  if (typeof Request !== 'undefined' && request instanceof Request) {
+    return fetch(new Request(request, { cache: 'no-cache' }));
+  }
+  return fetch(request, { cache: 'no-cache' });
+}
+
+/** Red primero: al estar online ves cambios al recargar; offline se usa la caché. */
+function networkFirst(request) {
+  return fetchAlwaysRevalidate(request)
+    .then((res) => {
+      if (res.ok && request.method === 'GET') {
+        const copy = res.clone();
+        caches.open(CACHE_NAME).then((cache) => {
+          cache.put(request, copy).catch(() => {});
+        });
+      }
+      if (request.mode === 'navigate' && !res.ok) {
+        return caches.match('./index.html');
+      }
+      return res;
+    })
+    .catch(() =>
+      caches.match(request).then((cached) => {
+        if (cached) return cached;
+        if (request.mode === 'navigate') {
+          return caches.match('./index.html');
+        }
+        return undefined;
+      })
+    );
+}
+
 self.addEventListener('fetch', (event) => {
   const { request } = event;
   const url = new URL(request.url);
@@ -45,38 +80,6 @@ self.addEventListener('fetch', (event) => {
     return;
   }
 
-  const path = url.pathname || '';
-
-  /* Página principal y app.js: red primero, para ver nuevas publicaciones sin borrar caché */
-  if (request.mode === 'navigate' && (path === '/' || path === '/index.html' || path.endsWith('/'))) {
-    event.respondWith(
-      fetch(request)
-        .then((res) => res.ok ? res : caches.match('./index.html'))
-        .catch(() => caches.match('./index.html'))
-    );
-    return;
-  }
-  if (path === '/js/app.js' || path.endsWith('/js/app.js')) {
-    event.respondWith(
-      fetch(request)
-        .then((res) => (res.ok ? res : caches.match(request)))
-        .catch(() => caches.match(request))
-    );
-    return;
-  }
-
-  event.respondWith(
-    caches.match(request).then((cached) => {
-      if (cached) {
-        return cached;
-      }
-      return fetch(request).catch(() => {
-        if (request.mode === 'navigate') {
-          return caches.match('./index.html');
-        }
-        return undefined;
-      });
-    })
-  );
+  event.respondWith(networkFirst(request));
 });
 

@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  function tt(key, vars) {
+    return window.I18n && typeof I18n.t === 'function' ? I18n.t(key, vars) : key;
+  }
+
   var WHATSAPP_NUMERO = '573145000000'; // +57 314 500 00 00
 
   var DRAFT_KEY = 'publicarFormDraft';
@@ -22,7 +26,7 @@
     select.innerHTML = '';
     var opt0 = document.createElement('option');
     opt0.value = '';
-    opt0.textContent = valorVacio || 'Seleccione';
+    opt0.textContent = valorVacio || tt('pub.ph_sel');
     select.appendChild(opt0);
     (opciones || []).forEach(function (valor) {
       var opt = document.createElement('option');
@@ -49,15 +53,15 @@
     }
 
     var departamentos = Object.keys(mapa).sort();
-    llenarSelect('publicar-departamento', departamentos, 'Seleccione departamento');
-    llenarSelect('publicar-municipio', [], 'Seleccione municipio');
+    llenarSelect('publicar-departamento', departamentos, tt('pub.opt_sel_dept'));
+    llenarSelect('publicar-municipio', [], tt('pub.opt_sel_mun'));
 
     if (!dptoSelect.dataset.deptoInicializado) {
       dptoSelect.dataset.deptoInicializado = '1';
       dptoSelect.addEventListener('change', function () {
         var dpto = dptoSelect.value;
         var municipios = dpto ? (mapa[dpto] || []) : [];
-        llenarSelect('publicar-municipio', municipios, 'Seleccione municipio');
+        llenarSelect('publicar-municipio', municipios, tt('pub.opt_sel_mun'));
       });
     }
   }
@@ -73,7 +77,7 @@
     } else {
       block.classList.add('oculto');
       if (dpto) dpto.value = '';
-      if (mun) llenarSelect('publicar-municipio', [], 'Seleccione municipio');
+      if (mun) llenarSelect('publicar-municipio', [], tt('pub.opt_sel_mun'));
     }
   }
 
@@ -225,22 +229,22 @@
     var mensaje = (datos.get('mensaje') || '').trim();
 
     var lineas = [
-      'Hola, quiero *publicar* una propiedad en la web de Inmobiliaria Pérez Araujo.',
+      tt('pub.wa_1'),
       '',
-      '*Nombre:* ' + nombre,
-      '*Celular:* ' + telefono,
-      '*E-mail:* ' + email,
-      '*País:* ' + (pais || '-'),
-      '*Departamento:* ' + (departamento || '-'),
-      '*Municipio:* ' + (municipio || '-'),
-      '*Zona / Sector / Barrio:* ' + (zona || '-'),
-      '*Tipo de inmueble:* ' + (tipoInmueble || '-'),
-      '*Valor estimado:* ' + (valorEstimado || 'A convenir'),
+      tt('pub.wa_name') + nombre,
+      tt('pub.wa_cell') + telefono,
+      tt('pub.wa_email') + email,
+      tt('pub.wa_country') + (pais || '-'),
+      tt('pub.wa_dept') + (departamento || '-'),
+      tt('pub.wa_mun') + (municipio || '-'),
+      tt('pub.wa_zone') + (zona || '-'),
+      tt('pub.wa_type') + (tipoInmueble || '-'),
+      tt('pub.wa_price') + (valorEstimado || tt('pub.wa_valor_def')),
       '',
-      '*Mensaje:*',
+      tt('pub.wa_msg'),
       mensaje,
       '',
-      '_(Enviado desde el formulario Publicar de la web)_'
+      tt('pub.wa_footer')
     ];
     return lineas.join('\n');
   }
@@ -267,7 +271,7 @@
         e.preventDefault();
         var check = document.getElementById('acepto-politica');
         if (check && !check.checked) {
-          alert('Debes aceptar la Política de tratamiento de datos para continuar.');
+          alert(tt('pub.alert_politica'));
           check.focus();
           return;
         }

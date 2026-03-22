@@ -15,7 +15,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
-  <link rel="stylesheet" href="css/styles.css">
+  <link rel="stylesheet" href="css/styles.css?v=2">
 </head>
 <body data-i18n-page="index">
   <header class="header">
@@ -65,22 +65,10 @@
       <p data-i18n="hero.subtitle">Venta y arriendo por ciudad y municipio</p>
     </section>
 
-    <!-- Video YouTube (reproducir en la página).
-         Para cambiarlo sin tocar código, usa el botón "Editar banner publicitario" en el panel de administración.
-         Este valor es el enlace por defecto si no hay configuración en Firebase. -->
+    <!-- Video del banner (iframe según URL guardada en Firebase o este enlace por defecto).
+         Panel admin → «Editar banner publicitario»: YouTube, Drive, Facebook, Instagram, TikTok, MP4… -->
     <section class="video-youtube" id="seccion-video" data-i18n-aria="video_youtube.aria" aria-label="Video" data-youtube-url="https://www.youtube.com/watch?v=8-34qjs46Js">
-      <div class="video-youtube__wrap">
-        <iframe
-          id="iframe-youtube"
-          src=""
-          data-i18n="video_youtube.title_iframe"
-          data-i18n-attr="title"
-          title="Video de Inmobiliaria Pérez Araujo"
-          allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-          allowfullscreen
-          class="video-youtube__iframe"
-        ></iframe>
-      </div>
+      <div class="video-youtube__wrap" id="banner-video-wrap"></div>
     </section>
 
     <section class="buscar" data-i18n-aria="buscar.aria" aria-label="Buscar propiedades">
@@ -131,17 +119,7 @@
     </section>
 
     <section class="video-local" data-i18n-aria="video_local.aria" aria-label="Video institucional">
-      <div class="video-local__wrap">
-        <video
-          class="video-local__video"
-          controls
-          playsinline
-          preload="metadata"
-        >
-          <source src="image/video/IMG_6700.MP4" type="video/mp4">
-          <span data-i18n="video_local.fallback">Tu navegador no admite reproducción de video en la página.</span>
-        </video>
-      </div>
+      <div class="video-local__wrap" id="video-institucional-wrap"></div>
     </section>
 
     <section class="quienes-somos" id="quienes-somos">
@@ -197,6 +175,7 @@
   </footer>
 
   <script src="js/i18n.js"></script>
+  <script src="js/video-embed.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>

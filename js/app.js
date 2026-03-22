@@ -1,6 +1,10 @@
 (function () {
   'use strict';
 
+  function tt(key, vars) {
+    return window.I18n && typeof I18n.t === 'function' ? I18n.t(key, vars) : key;
+  }
+
   var WHATSAPP_NUMERO = '573145000000'; // Colombia +57 314 500 00 00
 
   function getWhatsAppUrl(mensaje) {
@@ -44,40 +48,108 @@
 
   function initVideoYoutube() {
     var section = document.getElementById('seccion-video');
-    var iframe = document.getElementById('iframe-youtube');
-    if (!section || !iframe) return;
+    var wrap = section && section.querySelector('.video-youtube__wrap');
+    if (!section || !wrap) return;
+
+    var defaultUrl = (section.getAttribute('data-youtube-url') || '').trim();
 
     function aplicarDesdeUrl(url) {
-      url = (url || '').trim();
-      if (!url) {
-        url = (section.getAttribute('data-youtube-url') || '').trim();
-      }
-      if (!url) return;
-      var id = null;
-      if (url.indexOf('youtu.be/') !== -1) {
-        id = url.split('youtu.be/')[1].split('?')[0].split('&')[0];
-      } else {
-        var match = url.match(/[?&]v=([^&]+)/);
-        id = match ? match[1] : null;
-      }
-      if (!id) return;
-      iframe.src = 'https://www.youtube.com/embed/' + id + '?rel=0';
+      var u = (url || '').trim() || defaultUrl;
+      if (!u || !window.VideoEmbed || typeof VideoEmbed.render !== 'function') return;
+      VideoEmbed.render(wrap, u, {
+        skipAspectClass: true,
+        iframeClass: 'video-youtube__iframe',
+        videoClass: 'video-local__video',
+        title: tt('video_youtube.title_iframe'),
+        linkText: tt('video_embed.open_tab')
+      });
+      if (window.I18n && typeof I18n.applyDom === 'function') I18n.applyDom(wrap);
     }
 
-    var urlAttr = (section.getAttribute('data-youtube-url') || '').trim();
-
     if (window.FIREBASE_READY && window.FIREBASE_DB) {
-      window.FIREBASE_DB.collection('config').doc('banner').get()
+      var refBanner = window.FIREBASE_DB.collection('config').doc('banner');
+      refBanner.get({ source: 'server' })
+        .catch(function () {
+          return refBanner.get();
+        })
         .then(function (doc) {
-          var d = doc && doc.exists ? doc.data() : null;
-          var urlDb = d && d.videoUrl ? String(d.videoUrl) : '';
-          aplicarDesdeUrl(urlDb || urlAttr);
+          var d = typeof doc.data === 'function' ? doc.data() : null;
+          var urlDb = d && d.videoUrl != null ? String(d.videoUrl).trim() : '';
+          aplicarDesdeUrl(urlDb || defaultUrl);
         })
         .catch(function () {
-          aplicarDesdeUrl(urlAttr);
+          aplicarDesdeUrl(defaultUrl);
         });
     } else {
-      aplicarDesdeUrl(urlAttr);
+      aplicarDesdeUrl(defaultUrl);
+    }
+  }
+
+  var VIDEO_INST_DEFAULT = 'image/video/IMG_6700.MP4';
+
+  function renderVideoInstitucionalDefault(wrap) {
+    if (!wrap) return;
+    wrap.innerHTML = '';
+    wrap.classList.remove('video-embed-aspect');
+    var v = document.createElement('video');
+    v.className = 'video-local__video';
+    v.setAttribute('controls', '');
+    v.setAttribute('playsinline', '');
+    v.setAttribute('preload', 'metadata');
+    var s = document.createElement('source');
+    s.src = VIDEO_INST_DEFAULT;
+    s.type = 'video/mp4';
+    v.appendChild(s);
+    var fb = document.createElement('span');
+    fb.setAttribute('data-i18n', 'video_local.fallback');
+    fb.textContent =
+      window.I18n && typeof I18n.t === 'function'
+        ? I18n.t('video_local.fallback')
+        : 'Tu navegador no admite reproducción de video en la página.';
+    v.appendChild(fb);
+    wrap.appendChild(v);
+    if (window.I18n && typeof I18n.applyDom === 'function') I18n.applyDom(wrap);
+  }
+
+  function initVideoInstitucional() {
+    var wrap = document.getElementById('video-institucional-wrap');
+    if (!wrap) return;
+
+    function aplicar(url) {
+      var u = (url || '').trim();
+      if (!u) {
+        renderVideoInstitucionalDefault(wrap);
+        return;
+      }
+      if (!window.VideoEmbed || typeof VideoEmbed.render !== 'function') {
+        renderVideoInstitucionalDefault(wrap);
+        return;
+      }
+      VideoEmbed.render(wrap, u, {
+        iframeClass: 'video-youtube__iframe',
+        videoClass: 'video-local__video',
+        title: tt('video_local.aria'),
+        linkText: tt('video_embed.open_tab')
+      });
+      if (window.I18n && typeof I18n.applyDom === 'function') I18n.applyDom(wrap);
+    }
+
+    if (window.FIREBASE_READY && window.FIREBASE_DB) {
+      var refInst = window.FIREBASE_DB.collection('config').doc('institutional');
+      refInst.get({ source: 'server' })
+        .catch(function () {
+          return refInst.get();
+        })
+        .then(function (doc) {
+          var d = typeof doc.data === 'function' ? doc.data() : null;
+          var urlDb = d && d.videoUrl != null ? String(d.videoUrl).trim() : '';
+          aplicar(urlDb);
+        })
+        .catch(function () {
+          renderVideoInstitucionalDefault(wrap);
+        });
+    } else {
+      renderVideoInstitucionalDefault(wrap);
     }
   }
 
@@ -87,7 +159,7 @@
     select.innerHTML = '';
     var opt0 = document.createElement('option');
     opt0.value = '';
-    opt0.textContent = valorVacio || 'Todos';
+    opt0.textContent = valorVacio || tt('opt.todos');
     select.appendChild(opt0);
     opciones.forEach(function (valor) {
       var opt = document.createElement('option');
@@ -143,15 +215,17 @@
     if (p.municipio && p.municipio !== p.ciudad) partes.push(p.municipio);
     if (p.ciudad) partes.push(p.ciudad);
     if (p.pais && partes.length === 0) partes.push(p.pais);
-    return partes.length ? partes.join(', ') : (p.pais || 'Sin ubicación');
+    return partes.length ? partes.join(', ') : (p.pais || tt('tarjeta.sin_ubicacion'));
   }
 
   function formatPrecio(precioRaw) {
-    if (precioRaw == null) return 'Consultar';
+    if (precioRaw == null) return tt('tarjeta.consultar_precio');
     var s = String(precioRaw).trim();
-    if (!s) return 'Consultar';
-    // Si ya parece un texto sin números, dejarlo igual
-    if (!/\d/.test(s)) return s;
+    if (!s) return tt('tarjeta.consultar_precio');
+    if (!/\d/.test(s)) {
+      if (/^consultar$/i.test(s.trim())) return tt('tarjeta.consultar_precio');
+      return s;
+    }
     // Detectar posible sufijo tipo "/ mes"
     var idxBarra = s.indexOf('/');
     var sufijo = '';
@@ -191,7 +265,7 @@
         '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-imagen-link">' +
           '<div class="tarjeta-imagen">' +
             '<img src="' + escapeAttr(primeraImg) + '" alt="' + escapeHtml(p.titulo) + '" referrerpolicy="no-referrer" loading="lazy"' + fallbackAttr + proxyAttr + '>' +
-            (numFotos > 1 ? '<span class="tarjeta-n-fotos">+' + (numFotos - 1) + ' fotos</span>' : '') +
+            (numFotos > 1 ? '<span class="tarjeta-n-fotos">' + escapeHtml(tt('tarjeta.fotos_mas', { n: numFotos - 1 })) + '</span>' : '') +
           '</div>' +
         '</a>';
     } else {
@@ -200,42 +274,41 @@
 
     var videoHtml = '';
     if (p.video) {
-      videoHtml = '<a href="' + escapeAttr(p.video) + '" class="tarjeta-video" target="_blank" rel="noopener">🎬 Ver video</a>';
+      videoHtml = '<a href="' + escapeAttr(p.video) + '" class="tarjeta-video" target="_blank" rel="noopener">' + escapeHtml(tt('tarjeta.ver_video')) + '</a>';
     }
 
-    var tipoLabel = p.tipo === 'venta' ? 'Venta' : 'Arriendo';
-    if (esPorDia) tipoLabel += ' por día';
+    var tipoLabel = p.tipo === 'venta' ? tt('tarjeta.venta') : tt('tarjeta.arriendo');
+    if (esPorDia) tipoLabel += tt('tarjeta.por_dia');
 
     var cuerpo = imagenHtml +
       '<div class="tarjeta-cuerpo">' +
         '<div class="tarjeta-tipo">' + tipoLabel + '</div>' +
-        '<p class="tarjeta-codigo">Código Inmueble: ' + escapeHtml(codigo) + '</p>' +
+        '<p class="tarjeta-codigo">' + escapeHtml(tt('tarjeta.codigo')) + escapeHtml(codigo) + '</p>' +
         '<h3 class="tarjeta-titulo"><a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-titulo-link">' + escapeHtml(p.titulo) + '</a></h3>' +
         '<p class="tarjeta-ubicacion">' + escapeHtml(ubicacion) + '</p>' +
         '<p class="tarjeta-precio">' + escapeHtml(formatPrecio(p.precio)) + '</p>' +
-        '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-ver-mas">Ver más fotos y video</a>' +
+        '<a href="propiedad.html?id=' + escapeAttr(String(p.id)) + '" class="tarjeta-ver-mas">' + escapeHtml(tt('tarjeta.ver_mas')) + '</a>' +
         videoHtml;
 
     if (esPorDia) {
       cuerpo +=
         '<div class="tarjeta-por-dia">' +
-          '<label class="tarjeta-por-dia__label">Fecha de entrada</label>' +
+          '<label class="tarjeta-por-dia__label">' + escapeHtml(tt('tarjeta.fecha_in')) + '</label>' +
           '<input type="date" class="tarjeta-por-dia__input tarjeta-fecha-entrada" min="">' +
-          '<label class="tarjeta-por-dia__label">Fecha de salida</label>' +
+          '<label class="tarjeta-por-dia__label">' + escapeHtml(tt('tarjeta.fecha_out')) + '</label>' +
           '<input type="date" class="tarjeta-por-dia__input tarjeta-fecha-salida" min="">' +
-          '<label class="tarjeta-por-dia__label">Adultos</label>' +
+          '<label class="tarjeta-por-dia__label">' + escapeHtml(tt('tarjeta.adultos')) + '</label>' +
           '<input type="number" class="tarjeta-por-dia__input tarjeta-adultos" min="1" value="1" placeholder="1">' +
-          '<label class="tarjeta-por-dia__label">Niños</label>' +
+          '<label class="tarjeta-por-dia__label">' + escapeHtml(tt('tarjeta.ninos')) + '</label>' +
           '<input type="number" class="tarjeta-por-dia__input tarjeta-ninos" min="0" value="0" placeholder="0">' +
-          '<button type="button" class="btn btn-whatsapp-por-dia">Consultar por WhatsApp</button>' +
+          '<button type="button" class="btn btn-whatsapp-por-dia">' + escapeHtml(tt('tarjeta.whatsapp')) + '</button>' +
         '</div>';
     } else {
-      var mensaje = 'Hola, me interesa esta propiedad para ' + (p.tipo === 'venta' ? 'comprar' : 'arrendar') + ':\n\n' +
-        p.titulo + '\n' + ubicacion + '\n' +
-        'Código Inmueble: ' + codigo + '\n\n' +
-        'Vi el anuncio en la Aplicación Web de Inmobiliaria Pérez Araujo.';
+      var intro = p.tipo === 'venta' ? tt('msg.wa_prop_sale') : tt('msg.wa_prop_rent');
+      var mensaje = intro + p.titulo + '\n' + ubicacion + '\n' +
+        tt('msg.wa_prop_codigo') + codigo + tt('msg.wa_prop_footer');
       var urlWhatsApp = getWhatsAppUrl(mensaje);
-      cuerpo += '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn" target="_blank" rel="noopener">Consultar por WhatsApp</a>';
+      cuerpo += '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn" target="_blank" rel="noopener">' + escapeHtml(tt('tarjeta.whatsapp')) + '</a>';
     }
 
     cuerpo += '</div>';
@@ -269,12 +342,14 @@
 
     grid.innerHTML = '';
     if (propiedades.length === 0) {
-      info.textContent = 'No se encontraron propiedades.';
+      info.textContent = tt('props.info_none');
       if (sinResultados) sinResultados.classList.remove('oculto');
       return;
     }
     if (sinResultados) sinResultados.classList.add('oculto');
-    info.textContent = propiedades.length + ' propiedad(es).';
+    info.textContent = propiedades.length === 1
+      ? tt('props.info_one')
+      : tt('props.info_many', { n: propiedades.length });
     propiedades.forEach(function (p) {
       grid.appendChild(renderTarjeta(p));
     });
@@ -310,14 +385,12 @@
         var fechaSalida = (tarjeta.querySelector('.tarjeta-fecha-salida') && tarjeta.querySelector('.tarjeta-fecha-salida').value) || '';
         var adultos = (tarjeta.querySelector('.tarjeta-adultos') && tarjeta.querySelector('.tarjeta-adultos').value) || '1';
         var ninos = (tarjeta.querySelector('.tarjeta-ninos') && tarjeta.querySelector('.tarjeta-ninos').value) || '0';
-        var mensaje = 'Hola, me interesa esta propiedad para arrendar por día:\n\n' +
-          titulo + '\n' + ubicacion + '\n' +
-          'Código Inmueble: ' + (codigo || 'Sin código') + '\n\n' +
-          '*Fecha de entrada:* ' + (fechaEntrada || 'Por definir') + '\n' +
-          '*Fecha de salida:* ' + (fechaSalida || 'Por definir') + '\n' +
-          '*Adultos:* ' + adultos + '\n' +
-          '*Niños:* ' + ninos + '\n\n' +
-          'Vi el anuncio en la Aplicación Web de Inmobiliaria Pérez Araujo.';
+        var mensaje = tt('msg.wa_dia') + titulo + '\n' + ubicacion + '\n' +
+          tt('msg.wa_prop_codigo') + (codigo || tt('msg.wa_sin_codigo')) + '\n\n' +
+          tt('msg.wa_dia_line_in') + (fechaEntrada || '—') + '\n' +
+          tt('msg.wa_dia_line_out') + (fechaSalida || '—') + '\n' +
+          tt('msg.wa_dia_adultos') + adultos + '\n' +
+          tt('msg.wa_dia_ninos') + ninos + tt('msg.wa_prop_footer');
         window.open(getWhatsAppUrl(mensaje), '_blank', 'noopener');
       });
     }
@@ -350,7 +423,7 @@
       var ciudadVal = ciudad ? ciudad.value : '';
       var sub = ciudadVal ? propiedades.filter(function (p) { return p.ciudad === ciudadVal; }) : propiedades;
       var munOpts = extraerValoresUnicos(sub, 'municipio');
-      llenarSelect('filtro-municipio', munOpts, 'Todos los municipios');
+      llenarSelect('filtro-municipio', munOpts, tt('opt.all_mun'));
       if (municipio) municipio.value = '';
     }
 
@@ -358,7 +431,7 @@
   }
 
   function initWhatsApp() {
-    var mensajeGeneral = 'Hola, entré desde la web de Inmobiliaria Pérez Araujo. Me gustaría recibir información sobre propiedades (venta o arriendo).';
+    var mensajeGeneral = tt('msg.wa_general');
     var urlGeneral = getWhatsAppUrl(mensajeGeneral);
 
     var linkContacto = document.getElementById('link-whatsapp-contacto');
@@ -377,19 +450,19 @@
     function aplicarMapa(mapa) {
       window.CO_DEPARTAMENTOS = mapa;
       var departamentos = Object.keys(mapa).sort();
-      llenarSelect('filtro-ciudad', departamentos, 'Todos los departamentos');
+      llenarSelect('filtro-ciudad', departamentos, tt('opt.all_dept'));
 
       function actualizarMunicipiosPorDepto() {
         var dpto = dptoSelect.value;
         var municipios = dpto ? (mapa[dpto] || []) : [];
-        llenarSelect('filtro-municipio', municipios, 'Todos los municipios');
+        llenarSelect('filtro-municipio', municipios, tt('opt.all_mun'));
       }
 
       if (!dptoSelect.dataset.deptoInicializado) {
         dptoSelect.dataset.deptoInicializado = '1';
         dptoSelect.addEventListener('change', actualizarMunicipiosPorDepto);
       }
-      llenarSelect('filtro-municipio', [], 'Todos los municipios');
+      llenarSelect('filtro-municipio', [], tt('opt.all_mun'));
     }
 
     if (window.CO_DEPARTAMENTOS) {
@@ -423,7 +496,7 @@
         mun.innerHTML = '';
         var opt = document.createElement('option');
         opt.value = '';
-        opt.textContent = 'Todos los municipios';
+        opt.textContent = tt('opt.all_mun');
         mun.appendChild(opt);
       }
       window.CO_DEPARTAMENTOS = null;
@@ -498,8 +571,6 @@
     function runInit(propiedades) {
       propiedades = (propiedades || []).filter(function (p) { return !p.estado || p.estado !== 'arrendada'; });
       window.PROPIEDADES = propiedades;
-      initVideoYoutube();
-
       function initDespuesDePaises() {
         initPaisYUbicacion();
         mostrarOcultarColombiaUbicacion(true);
@@ -625,6 +696,9 @@
         arriendoPorDia: p.arriendoPorDia === true
       };
     }
+
+    initVideoYoutube();
+    initVideoInstitucional();
 
     /* Con Firebase: escucha en tiempo real para que las nuevas publicaciones aparezcan sin recargar */
     if (window.FIREBASE_READY && window.FIREBASE_DB) {

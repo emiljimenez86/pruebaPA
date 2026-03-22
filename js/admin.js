@@ -541,7 +541,7 @@
     initPaisesAdmin();
     initDepartamentos();
 
-    /* Banner publicitario (video de inicio) */
+    /* Banner publicitario (video de inicio) — YouTube, Drive, Facebook, Instagram, TikTok, MP4… */
     (function initBannerVideo() {
       var input = document.getElementById('adm-banner-video');
       var form = document.getElementById('form-banner-video');
@@ -553,35 +553,114 @@
         estado.textContent = msg || '';
       }
 
-      if (window.FIREBASE_READY && window.FIREBASE_DB) {
-        window.FIREBASE_DB.collection('config').doc('banner').get()
+      function loadBannerFromServer() {
+        if (!window.FIREBASE_READY || !window.FIREBASE_DB) return;
+        window.FIREBASE_DB.collection('config').doc('banner')
+          .get({ source: 'server' })
           .then(function (doc) {
-            if (doc && doc.exists) {
-              var d = doc.data() || {};
-              if (d.videoUrl) input.value = String(d.videoUrl);
+            var d = typeof doc.data === 'function' ? doc.data() : null;
+            if (d && d.videoUrl != null && String(d.videoUrl).trim() !== '') {
+              input.value = String(d.videoUrl).trim();
             }
           })
-          .catch(function () {});
+          .catch(function (err) {
+            setEstado('No se pudo cargar el banner: ' + (err && err.message ? err.message : String(err)));
+          });
       }
+
+      loadBannerFromServer();
+
+      if (form.getAttribute('data-pa-video-bound') === '1') return;
+      form.setAttribute('data-pa-video-bound', '1');
 
       form.addEventListener('submit', function (e) {
         e.preventDefault();
         var raw = (input.value || '').trim();
-        if (!raw) {
-          setEstado('Ingresa una URL de YouTube válida.');
-          return;
+        if (raw && !/^https?:\/\//i.test(raw) && raw.indexOf('/') !== -1) {
+          raw = 'https://' + raw.replace(/^\/+/, '');
+          input.value = raw;
         }
-        var urlNormalizada = normalizarYoutubeUrl(raw);
         if (!window.FIREBASE_READY || !window.FIREBASE_DB) {
           alert('Para editar el banner necesitas tener Firebase configurado en la web pública.');
           return;
         }
+        if (raw && window.VideoEmbed && !VideoEmbed.isLikelyVideoUrl(raw)) {
+          setEstado('La URL no parece válida (usa http/https o enlace reconocido).');
+          return;
+        }
         window.FIREBASE_DB.collection('config').doc('banner').set({
-          videoUrl: urlNormalizada
+          videoUrl: raw
         }, { merge: true }).then(function () {
-          setEstado('Banner actualizado. El video de inicio cambiará en la página principal.');
+          loadBannerFromServer();
+          setEstado(raw
+            ? 'Banner actualizado. Recarga la página principal para ver el cambio.'
+            : 'Banner vacío: en la web se usará el video por defecto del HTML.');
         }).catch(function (err) {
-          alert('Error al guardar el banner: ' + (err && err.message ? err.message : err));
+          var msg = err && err.message ? err.message : String(err);
+          setEstado('Error al guardar: ' + msg);
+          alert('Error al guardar el banner: ' + msg);
+        });
+      });
+    })();
+
+    /* Video institucional (Firestore config/institutional) */
+    (function initInstitucionalVideo() {
+      var input = document.getElementById('adm-institucional-video');
+      var form = document.getElementById('form-institucional-video');
+      var estado = document.getElementById('adm-institucional-estado');
+      if (!input || !form) return;
+
+      function setEstado(msg) {
+        if (!estado) return;
+        estado.textContent = msg || '';
+      }
+
+      function loadInstitucionalFromServer() {
+        if (!window.FIREBASE_READY || !window.FIREBASE_DB) return;
+        window.FIREBASE_DB.collection('config').doc('institutional')
+          .get({ source: 'server' })
+          .then(function (doc) {
+            var d = typeof doc.data === 'function' ? doc.data() : null;
+            if (d && d.videoUrl != null && String(d.videoUrl).trim() !== '') {
+              input.value = String(d.videoUrl).trim();
+            }
+          })
+          .catch(function (err) {
+            setEstado('No se pudo cargar el enlace: ' + (err && err.message ? err.message : String(err)));
+          });
+      }
+
+      loadInstitucionalFromServer();
+
+      if (form.getAttribute('data-pa-video-bound') === '1') return;
+      form.setAttribute('data-pa-video-bound', '1');
+
+      form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        var raw = (input.value || '').trim();
+        if (raw && !/^https?:\/\//i.test(raw) && raw.indexOf('/') !== -1) {
+          raw = 'https://' + raw.replace(/^\/+/, '');
+          input.value = raw;
+        }
+        if (!window.FIREBASE_READY || !window.FIREBASE_DB) {
+          alert('Para esto necesitas Firebase configurado.');
+          return;
+        }
+        if (raw && window.VideoEmbed && !VideoEmbed.isLikelyVideoUrl(raw)) {
+          setEstado('La URL no parece válida.');
+          return;
+        }
+        window.FIREBASE_DB.collection('config').doc('institutional').set({
+          videoUrl: raw
+        }, { merge: true }).then(function () {
+          loadInstitucionalFromServer();
+          setEstado(raw
+            ? 'Guardado. Recarga la web pública para ver el video.'
+            : 'Guardado vacío: se mostrará el MP4 local por defecto.');
+        }).catch(function (err) {
+          var msg = err && err.message ? err.message : String(err);
+          setEstado('Error al guardar: ' + msg);
+          alert('Error al guardar el video institucional: ' + msg);
         });
       });
     })();
