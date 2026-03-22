@@ -62,9 +62,9 @@
       <section class="admin-section">
         <h2>Editar banner publicitario</h2>
         <p class="admin-info">Video superior de la página principal. Acepta enlace de <strong>YouTube</strong>, <strong>Google Drive</strong> (archivo de video con acceso “Cualquiera con el enlace”), <strong>Facebook</strong> (URL del video), <strong>Instagram</strong> (publicación o reel) o <strong>TikTok</strong> (URL que contenga <code>/video/</code> y el número). Enlaces cortos (fb.watch, vm.tiktok) se mostrarán como botón “Abrir en nueva pestaña”.</p>
-        <form id="form-banner-video" class="admin-form">
+        <form id="form-banner-video" class="admin-form" novalidate>
           <label class="label" for="adm-banner-video">URL del video</label>
-          <input type="url" id="adm-banner-video" class="input" placeholder="YouTube, Drive, Facebook, Instagram, TikTok…">
+          <input type="text" id="adm-banner-video" class="input" inputmode="url" autocomplete="off" placeholder="YouTube, Drive, Facebook, Instagram, TikTok…">
           <button type="submit" class="btn btn-enviar">Guardar banner publicitario</button>
         </form>
         <p class="admin-hint" id="adm-banner-estado"></p>
@@ -73,9 +73,9 @@
       <section class="admin-section">
         <h2>Editar Video Institucional</h2>
         <p class="admin-info">Mismos tipos de enlace que el banner. El campo es opcional.</p>
-        <form id="form-institucional-video" class="admin-form">
+        <form id="form-institucional-video" class="admin-form" novalidate>
           <label class="label" for="adm-institucional-video">URL del video (opcional)</label>
-          <input type="url" id="adm-institucional-video" class="input" placeholder="Drive, YouTube, Instagram… o vacío = video local">
+          <input type="text" id="adm-institucional-video" class="input" inputmode="url" autocomplete="off" placeholder="Pega el enlace completo (Drive, YouTube, etc.)">
           <button type="submit" class="btn btn-enviar">Guardar video institucional</button>
         </form>
         <p class="admin-hint" id="adm-institucional-estado"></p>
