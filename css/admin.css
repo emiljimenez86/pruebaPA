@@ -1,8 +1,8 @@
 /* Panel administrador - no enlazado desde la web */
 
 .admin-body {
-  background: var(--negro);
   min-height: 100vh;
+  min-height: 100dvh;
 }
 
 .admin-login {
@@ -151,19 +151,27 @@
 
 .admin-main {
   padding: 1.5rem;
+  color: var(--texto-sobre-fondo);
 }
 .admin-section {
   margin-bottom: 2rem;
+  padding: 1.15rem 1.1rem 1.35rem;
+  background: var(--panel-sobre-fondo);
+  backdrop-filter: blur(var(--panel-sobre-fondo-blur));
+  -webkit-backdrop-filter: blur(var(--panel-sobre-fondo-blur));
+  border-radius: 14px;
+  border: 1px solid var(--panel-sobre-fondo-borde);
+  box-shadow: var(--panel-sobre-fondo-sombra);
 }
 .admin-section h2 {
   font-family: 'Libre Baskerville', serif;
   font-size: 1.2rem;
-  color: var(--dorado);
+  color: var(--dorado-oscuro);
   margin: 0 0 0.75rem;
 }
 .admin-info {
   font-size: 0.9rem;
-  color: var(--gris);
+  color: var(--texto-sobre-fondo-muted);
   margin: 0 0 1rem;
   line-height: 1.4;
 }
@@ -175,6 +183,7 @@
 }
 .admin-form .label {
   margin-top: 0.5rem;
+  color: var(--texto-sobre-fondo);
 }
 .admin-form .label:first-of-type {
   margin-top: 0;
@@ -188,7 +197,7 @@
 }
 .admin-hint {
   font-size: 0.8rem;
-  color: var(--gris);
+  color: var(--texto-sobre-fondo-muted);
   margin: -0.25rem 0 0.5rem;
 }
 .admin-pais-wrap {
@@ -290,7 +299,7 @@
   background: rgba(231, 76, 60, 0.35);
 }
 .admin-vacio {
-  color: var(--gris);
+  color: var(--texto-sobre-fondo-muted);
   font-size: 0.95rem;
   padding: 1rem 0;
 }

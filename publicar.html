@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pérez Araujo">
-  <title>Publicar propiedad | Inmobiliaria Pérez Araujo</title>
+  <title data-i18n="meta.title_publicar">Publicar propiedad | Inmobiliaria Pérez Araujo</title>
   <link rel="icon" type="image/png" href="image/logo/PerezAraujoLogo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="image/logo/PerezAraujoLogo.png">
   <link rel="manifest" href="manifest.json">
@@ -16,36 +16,65 @@
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body data-i18n-page="publicar">
   <header class="header">
-    <a href="index.html" class="logo-link" aria-label="Inicio">
+    <a href="index.html" class="logo-link" data-i18n-aria="header.logo_aria" aria-label="Inicio">
       <img src="image/logo/PerezAraujoLogo.png" alt="Inmobiliaria Pérez Araujo" class="logo">
     </a>
     <p class="header__nit">NIT. 901189003-2</p>
     <nav class="nav" aria-label="Principal">
-      <a href="index.html">Inicio</a>
-      <a href="publicar.html" aria-current="page">Publicar</a>
-      <a href="index.html#quienes-somos">Quiénes somos</a>
+      <a href="index.html" data-i18n="nav.home">Inicio</a>
+      <a href="publicar.html" aria-current="page" data-i18n="nav.publish">Publicar</a>
+      <a href="index.html#quienes-somos" data-i18n="nav.about">Quiénes somos</a>
+      <div class="header-lang">
+        <span class="header-lang__label" id="header-lang-label" data-i18n="lang.label">Idioma</span>
+        <div class="header-lang-wrap" id="header-lang-wrap">
+          <button type="button" class="header-lang__trigger" id="header-lang-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="header-lang-label">
+            <span class="header-lang__trigger-inner" id="header-lang-trigger-inner">
+              <img src="https://flagcdn.com/es.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span class="header-lang__name">Español</span>
+            </span>
+          </button>
+          <div class="header-lang-list oculto" id="header-lang-list" role="listbox" aria-labelledby="header-lang-label">
+            <button type="button" class="header-lang-item" role="option" data-lang="es">
+              <img src="https://flagcdn.com/es.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Español</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="en">
+              <img src="https://flagcdn.com/gb.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>English</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="pt">
+              <img src="https://flagcdn.com/br.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Português</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="ru">
+              <img src="https://flagcdn.com/ru.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Русский</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
   <main class="main main-form">
     <section class="hero hero-chico">
-      <h1>Publicar propiedad</h1>
-      <p>Completa los datos y te llevamos a WhatsApp para que nos envíes tu aviso.</p>
+      <h1 data-i18n="pub.hero_title">Publicar propiedad</h1>
+      <p data-i18n="pub.hero_sub">Completa los datos y te llevamos a WhatsApp para que nos envíes tu aviso.</p>
     </section>
 
     <form class="form-publicar" id="form-publicar">
-      <label class="label" for="nombre-completo">Nombre completo *</label>
-      <input type="text" id="nombre-completo" name="nombre" class="input" placeholder="Ej: Juan Pérez" required>
+      <label class="label" for="nombre-completo" data-i18n="pub.label_nombre">Nombre completo *</label>
+      <input type="text" id="nombre-completo" name="nombre" class="input" data-i18n-placeholder="pub.ph_nombre" placeholder="Ej: Juan Pérez" required>
 
-      <label class="label" for="celular">Número de celular *</label>
-      <input type="tel" id="celular" name="telefono" class="input" placeholder="Ej: 300 123 4567" required>
+      <label class="label" for="celular" data-i18n="pub.label_tel">Número de celular *</label>
+      <input type="tel" id="celular" name="telefono" class="input" data-i18n-placeholder="pub.ph_tel" placeholder="Ej: 300 123 4567" required>
 
-      <label class="label" for="email">E-mail *</label>
-      <input type="email" id="email" name="email" class="input" placeholder="Ej: correo@ejemplo.com" required>
+      <label class="label" for="email" data-i18n="pub.label_email">E-mail *</label>
+      <input type="email" id="email" name="email" class="input" data-i18n-placeholder="pub.ph_email" placeholder="Ej: correo@ejemplo.com" required>
 
-      <label class="label" id="label-pais">País *</label>
+      <label class="label" id="label-pais" data-i18n="pub.label_pais">País *</label>
       <div class="filtro-pais-wrap" id="filtro-pais-wrap">
         <input type="hidden" name="pais" id="filtro-pais" value="Colombia">
         <button type="button" class="filtro-pais-trigger input" id="filtro-pais-trigger" aria-haspopup="listbox" aria-expanded="false">
@@ -54,26 +83,26 @@
             <span>Colombia</span>
           </span>
         </button>
-        <div class="filtro-pais-list oculto" id="filtro-pais-list" role="listbox" aria-label="Seleccionar país"></div>
+        <div class="filtro-pais-list oculto" id="filtro-pais-list" role="listbox" data-i18n-aria="pub.pais_list_aria" aria-label="Seleccionar país"></div>
       </div>
 
       <div class="filtro-colombia-ubicacion" id="filtro-colombia-ubicacion">
-        <label class="label" for="publicar-departamento">Departamento</label>
+        <label class="label" for="publicar-departamento" data-i18n="pub.label_dept">Departamento</label>
         <select name="departamento" id="publicar-departamento" class="input">
           <option value="">Seleccione departamento</option>
         </select>
-        <label class="label" for="publicar-municipio">Municipio</label>
+        <label class="label" for="publicar-municipio" data-i18n="pub.label_mun">Municipio</label>
         <select name="municipio" id="publicar-municipio" class="input">
           <option value="">Seleccione municipio</option>
         </select>
       </div>
 
-      <label class="label" for="zona">Zona / Sector / Barrio</label>
-      <input type="text" id="zona" name="zona" class="input" placeholder="Ej: Centro, Poblado, etc.">
+      <label class="label" for="zona" data-i18n="pub.label_zona">Zona / Sector / Barrio</label>
+      <input type="text" id="zona" name="zona" class="input" data-i18n-placeholder="pub.ph_zona" placeholder="Ej: Centro, Poblado, etc.">
 
-      <label class="label" for="tipo-inmueble">Tipo de inmueble *</label>
+      <label class="label" for="tipo-inmueble" data-i18n="pub.label_tipo_inm">Tipo de inmueble *</label>
       <select name="tipo_inmueble" id="tipo-inmueble" class="input" required>
-        <option value="">Seleccione tipo de inmueble</option>
+        <option value="" data-i18n="pub.opt_tipo_inm">Seleccione tipo de inmueble</option>
         <option value="Apartamento">Apartamento</option>
         <option value="Casa Comercial">Casa Comercial</option>
         <option value="Casa Vivienda">Casa Vivienda</option>
@@ -93,43 +122,44 @@
         <option value="Cabaña">Cabaña</option>
       </select>
 
-      <label class="label" for="valor">Valor estimado</label>
-      <input type="text" id="valor" name="valor_estimado" class="input" placeholder="Ej: 150.000.000 o 1.200.000/mes">
+      <label class="label" for="valor" data-i18n="pub.label_valor">Valor estimado</label>
+      <input type="text" id="valor" name="valor_estimado" class="input" data-i18n-placeholder="pub.ph_valor" placeholder="Ej: 150.000.000 o 1.200.000/mes">
 
-      <label class="label" for="mensaje">Déjanos tu mensaje *</label>
-      <textarea id="mensaje" name="mensaje" class="input input-area" rows="4" placeholder="Describe la propiedad, características, contacto preferido..." required></textarea>
+      <label class="label" for="mensaje" data-i18n="pub.label_mensaje">Déjanos tu mensaje *</label>
+      <textarea id="mensaje" name="mensaje" class="input input-area" rows="4" data-i18n-placeholder="pub.ph_mensaje" placeholder="Describe la propiedad, características, contacto preferido..." required></textarea>
 
       <label class="checkbox-label">
         <input type="checkbox" name="acepto_politica" id="acepto-politica" required>
-        <span>Acepto la <a href="politica-privacidad.html" id="link-politica-publicar" rel="noopener">Política de tratamiento de datos</a> *</span>
+        <span><span data-i18n="pub.politica"></span><a href="politica-privacidad.html" id="link-politica-publicar" rel="noopener" data-i18n="pub.politica_link"></a><span data-i18n="pub.politica_fin"></span></span>
       </label>
 
-      <p class="form-nota">Al enviar se abrirá WhatsApp con un mensaje listo. Envíalo para que publiquemos tu aviso.</p>
-      <button type="submit" class="btn btn-enviar">Enviar por WhatsApp</button>
+      <p class="form-nota" data-i18n="pub.nota">Al enviar se abrirá WhatsApp con un mensaje listo. Envíalo para que publiquemos tu aviso.</p>
+      <button type="submit" class="btn btn-enviar" data-i18n="pub.btn">Enviar por WhatsApp</button>
     </form>
   </main>
 
   <footer class="footer">
     <img src="image/logo/PerezAraujoLogo.png" alt="" class="footer-logo" width="160" height="80">
-    <p class="footer-dev">2026 Inmobiliaria Pérez Araujo. Todos los derechos reservados a Emil Jiménez Ortiz — Desarrollador Web</p>
+    <p class="footer-dev" data-i18n="footer.rights">2026 Inmobiliaria Pérez Araujo. Todos los derechos reservados a Emil Jiménez Ortiz — Desarrollador Web</p>
   </footer>
 
   <div class="ios-install-banner" id="ios-install-banner" aria-hidden="true">
     <div class="ios-install-banner__content">
-      <p class="ios-install-banner__title">Para instalar esta app en tu iPhone:</p>
+      <p class="ios-install-banner__title" data-i18n="ios.title">Para instalar esta app en tu iPhone:</p>
       <ol class="ios-install-banner__steps">
-        <li>Toca el botón <span aria-hidden="true">Compartir ⬆️</span> en Safari.</li>
-        <li>Elige <strong>Añadir a pantalla de inicio</strong>.</li>
-        <li>Confirma tocando <strong>Añadir</strong>.</li>
+        <li data-i18n-html="ios.li1">Toca el botón Compartir ⬆️ en Safari.</li>
+        <li data-i18n-html="ios.li2">Elige <strong>Añadir a pantalla de inicio</strong>.</li>
+        <li data-i18n-html="ios.li3">Confirma tocando <strong>Añadir</strong>.</li>
       </ol>
     </div>
-    <button type="button" class="ios-install-banner__close" data-ios-banner-close>Cerrar</button>
+    <button type="button" class="ios-install-banner__close" data-ios-banner-close data-i18n="ios.close">Cerrar</button>
   </div>
 
-  <button type="button" class="install-btn" id="install-btn" aria-label="Instalar aplicación">
+  <button type="button" class="install-btn" id="install-btn" data-i18n="install.btn" data-i18n-aria="install.aria" aria-label="Instalar aplicación">
     Instalar app
   </button>
 
+  <script src="js/i18n.js"></script>
   <script src="js/colombia-data.js"></script>
   <script src="js/PaisesBanderas-data.js"></script>
   <script src="js/publicar.js"></script>

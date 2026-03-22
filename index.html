@@ -8,7 +8,7 @@
   <meta name="mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pérez Araujo">
-  <title>Inmobiliaria Pérez Araujo | Venta y arriendo</title>
+  <title data-i18n="meta.title_index">Inmobiliaria Pérez Araujo | Venta y arriendo</title>
   <link rel="icon" type="image/png" href="image/logo/PerezAraujoLogo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="image/logo/PerezAraujoLogo.png">
   <link rel="manifest" href="manifest.json">
@@ -17,33 +17,64 @@
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
 </head>
-<body>
+<body data-i18n-page="index">
   <header class="header">
-    <a href="index.html" class="logo-link" aria-label="Inicio">
+    <a href="index.html" class="logo-link" data-i18n-aria="header.logo_aria" aria-label="Inicio">
       <img src="image/logo/PerezAraujoLogo.png" alt="Inmobiliaria Pérez Araujo" class="logo">
     </a>
     <p class="header__nit">NIT. 901189003-2</p>
     <nav class="nav" aria-label="Principal">
-      <a href="index.html">Inicio</a>
-      <a href="publicar.html">Publicar</a>
-      <a href="#quienes-somos">Quiénes somos</a>
+      <a href="index.html" data-i18n="nav.home">Inicio</a>
+      <a href="publicar.html" data-i18n="nav.publish">Publicar</a>
+      <a href="#quienes-somos" data-i18n="nav.about">Quiénes somos</a>
+      <div class="header-lang">
+        <span class="header-lang__label" id="header-lang-label" data-i18n="lang.label">Idioma</span>
+        <div class="header-lang-wrap" id="header-lang-wrap">
+          <button type="button" class="header-lang__trigger" id="header-lang-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="header-lang-label">
+            <span class="header-lang__trigger-inner" id="header-lang-trigger-inner">
+              <img src="https://flagcdn.com/es.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span class="header-lang__name">Español</span>
+            </span>
+          </button>
+          <div class="header-lang-list oculto" id="header-lang-list" role="listbox" aria-labelledby="header-lang-label">
+            <button type="button" class="header-lang-item" role="option" data-lang="es">
+              <img src="https://flagcdn.com/es.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Español</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="en">
+              <img src="https://flagcdn.com/gb.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>English</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="pt">
+              <img src="https://flagcdn.com/br.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Português</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="ru">
+              <img src="https://flagcdn.com/ru.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Русский</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
   <main class="main">
     <section class="hero">
-      <h1>Tu lugar, tu momento ¡Encuentra el tuyo!</h1>
-      <p>Venta y arriendo por ciudad y municipio</p>
+      <h1 data-i18n="hero.title">Tu lugar, tu momento ¡Encuentra el tuyo!</h1>
+      <p data-i18n="hero.subtitle">Venta y arriendo por ciudad y municipio</p>
     </section>
 
     <!-- Video YouTube (reproducir en la página).
          Para cambiarlo sin tocar código, usa el botón "Editar banner publicitario" en el panel de administración.
          Este valor es el enlace por defecto si no hay configuración en Firebase. -->
-    <section class="video-youtube" id="seccion-video" aria-label="Video" data-youtube-url="https://www.youtube.com/watch?v=8-34qjs46Js">
+    <section class="video-youtube" id="seccion-video" data-i18n-aria="video_youtube.aria" aria-label="Video" data-youtube-url="https://www.youtube.com/watch?v=8-34qjs46Js">
       <div class="video-youtube__wrap">
         <iframe
           id="iframe-youtube"
           src=""
+          data-i18n="video_youtube.title_iframe"
+          data-i18n-attr="title"
           title="Video de Inmobiliaria Pérez Araujo"
           allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
           allowfullscreen
@@ -52,10 +83,10 @@
       </div>
     </section>
 
-    <section class="buscar" aria-label="Buscar propiedades">
-      <h2>Buscar</h2>
+    <section class="buscar" data-i18n-aria="buscar.aria" aria-label="Buscar propiedades">
+      <h2 data-i18n="buscar.title">Buscar</h2>
       <form class="filtros" id="form-filtros">
-        <label class="label" id="filtro-pais-label" for="filtro-pais-trigger">País</label>
+        <label class="label" id="filtro-pais-label" for="filtro-pais-trigger" data-i18n="label.country">País</label>
         <div class="filtro-pais-wrap" id="filtro-pais-wrap">
           <input type="hidden" name="pais" id="filtro-pais" value="Colombia">
           <button type="button" class="filtro-pais-trigger input" id="filtro-pais-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="filtro-pais-label">
@@ -64,47 +95,61 @@
               <span>Colombia</span>
             </span>
           </button>
-          <div class="filtro-pais-list oculto" id="filtro-pais-list" role="listbox" aria-label="Seleccionar país"></div>
+          <div class="filtro-pais-list oculto" id="filtro-pais-list" role="listbox" data-i18n-aria="filtro_pais_list_aria" aria-label="Seleccionar país"></div>
         </div>
         <div class="filtro-colombia-ubicacion" id="filtro-colombia-ubicacion">
-          <label class="label" for="filtro-ciudad">Departamento</label>
+          <label class="label" for="filtro-ciudad" data-i18n="label.department">Departamento</label>
           <select name="departamento" id="filtro-ciudad" class="input">
             <option value="">Todos los departamentos</option>
           </select>
-          <label class="label" for="filtro-municipio">Municipio</label>
+          <label class="label" for="filtro-municipio" data-i18n="label.municipality">Municipio</label>
           <select name="municipio" id="filtro-municipio" class="input">
             <option value="">Todos los municipios</option>
           </select>
         </div>
-        <label class="label">Tipo</label>
+        <label class="label" data-i18n="label.type">Tipo</label>
         <select name="tipo" id="filtro-tipo" class="input">
-          <option value="">Venta o arriendo</option>
-          <option value="venta">Venta</option>
-          <option value="arriendo">Arriendo</option>
-          <option value="arriendo-dia">Arriendo por día</option>
+          <option value="" data-i18n="opt.type_any">Venta o arriendo</option>
+          <option value="venta" data-i18n="opt.type_sale">Venta</option>
+          <option value="arriendo" data-i18n="opt.type_rent">Arriendo</option>
+          <option value="arriendo-dia" data-i18n="opt.type_daily">Arriendo por día</option>
         </select>
-        <button type="submit" class="btn btn-buscar">Buscar</button>
+        <button type="submit" class="btn btn-buscar" data-i18n="btn.search">Buscar</button>
       </form>
     </section>
 
-    <section class="listado" aria-label="Propiedades">
-      <h2>Propiedades</h2>
+    <section class="listado" data-i18n-aria="props.aria" aria-label="Propiedades">
+      <h2 data-i18n="props.title">Propiedades</h2>
       <p class="resultados-info" id="resultados-info"></p>
       <div class="grid-propiedades" id="grid-propiedades">
         <!-- Se llena con JS -->
       </div>
       <div class="sin-resultados oculto" id="sin-resultados">
-        <p>No hay propiedades con esos filtros.</p>
-        <a href="publicar.html" class="btn">Publicar una propiedad</a>
+        <p data-i18n="props.empty_filters">No hay propiedades con esos filtros.</p>
+        <a href="publicar.html" class="btn" data-i18n="props.empty_cta">Publicar una propiedad</a>
+      </div>
+    </section>
+
+    <section class="video-local" data-i18n-aria="video_local.aria" aria-label="Video institucional">
+      <div class="video-local__wrap">
+        <video
+          class="video-local__video"
+          controls
+          playsinline
+          preload="metadata"
+        >
+          <source src="image/video/IMG_6700.MP4" type="video/mp4">
+          <span data-i18n="video_local.fallback">Tu navegador no admite reproducción de video en la página.</span>
+        </video>
       </div>
     </section>
 
     <section class="quienes-somos" id="quienes-somos">
-      <h2>Quiénes somos</h2>
-      <p class="quienes-somos__texto">
+      <h2 data-i18n="about.title">Quiénes somos</h2>
+      <p class="quienes-somos__texto" data-i18n="about.text">
         Inmobiliaria Pérez Araujo es tu aliada en la búsqueda del hogar ideal. Nos especializamos en venta y arriendo de propiedades en Colombia, con atención personalizada y un equipo comprometido en ayudarte a encontrar la mejor opción o a publicar tu inmueble.
       </p>
-      <p class="quienes-somos__cta">¿Tienes alguna consulta o quieres publicar una propiedad?</p>
+      <p class="quienes-somos__cta" data-i18n="about.cta">¿Tienes alguna consulta o quieres publicar una propiedad?</p>
       <div class="quienes-somos__redes contacto-links">
         <a href="https://instagram.com/Inmobiliaria_perezaraujo" target="_blank" rel="noopener" class="contacto-item contacto-item--red" aria-label="Instagram">
           <img src="image/redes/instagram.png" alt="" class="contacto-item__logo" width="28" height="28" aria-hidden="true">
@@ -116,7 +161,7 @@
         </a>
         <a href="#" class="contacto-item contacto-item--red" id="link-whatsapp-contacto" target="_blank" rel="noopener" aria-label="WhatsApp">
           <img src="image/redes/whatsaap.png" alt="" class="contacto-item__logo" width="28" height="28" aria-hidden="true">
-          <span>Escríbenos por WhatsApp</span>
+          <span data-i18n="contact.wa_span">Escríbenos por WhatsApp</span>
         </a>
         <a href="mailto:Inmobiliariaperezaraujo@gmail.com" class="contacto-item" aria-label="Correo">
           <span class="icon" aria-hidden="true">✉</span>
@@ -132,25 +177,26 @@
 
   <div class="ios-install-banner" id="ios-install-banner" aria-hidden="true">
     <div class="ios-install-banner__content">
-      <p class="ios-install-banner__title">Para instalar esta app en tu iPhone:</p>
+      <p class="ios-install-banner__title" data-i18n="ios.title">Para instalar esta app en tu iPhone:</p>
       <ol class="ios-install-banner__steps">
-        <li>Toca el botón <span aria-hidden="true">Compartir ⬆️</span> en Safari.</li>
-        <li>Elige <strong>Añadir a pantalla de inicio</strong>.</li>
-        <li>Confirma tocando <strong>Añadir</strong>.</li>
+        <li data-i18n-html="ios.li1">Toca el botón Compartir ⬆️ en Safari.</li>
+        <li data-i18n-html="ios.li2">Elige <strong>Añadir a pantalla de inicio</strong>.</li>
+        <li data-i18n-html="ios.li3">Confirma tocando <strong>Añadir</strong>.</li>
       </ol>
     </div>
-    <button type="button" class="ios-install-banner__close" data-ios-banner-close>Cerrar</button>
+    <button type="button" class="ios-install-banner__close" data-ios-banner-close data-i18n="ios.close">Cerrar</button>
   </div>
 
-  <button type="button" class="install-btn" id="install-btn" aria-label="Instalar aplicación">
+  <button type="button" class="install-btn" id="install-btn" data-i18n="install.btn" data-i18n-aria="install.aria" aria-label="Instalar aplicación">
     Instalar app
   </button>
 
   <footer class="footer">
     <img src="image/logo/PerezAraujoLogo.png" alt="" class="footer-logo" width="160" height="80">
-    <p class="footer-dev">2026 Inmobiliaria Pérez Araujo. Todos los derechos reservados a Emil Jiménez Ortiz — Desarrollador Web</p>
+    <p class="footer-dev" data-i18n="footer.rights">2026 Inmobiliaria Pérez Araujo. Todos los derechos reservados a Emil Jiménez Ortiz — Desarrollador Web</p>
   </footer>
 
+  <script src="js/i18n.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/firebase-config.js"></script>
   <script src="https://www.gstatic.com/firebasejs/10.7.1/firebase-app-compat.js"></script>

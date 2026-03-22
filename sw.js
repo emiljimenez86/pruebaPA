@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inmobiliaria-perez-araujo-v2';
+const CACHE_NAME = 'inmobiliaria-perez-araujo-v3';
 
 const APP_SHELL = [
   './',
@@ -10,6 +10,7 @@ const APP_SHELL = [
   './js/publicar.js',
   './js/pwa.js',
   './js/firebase-app.js',
+  './js/i18n.js',
   './image/logo/PerezAraujoLogo.png'
 ];
 

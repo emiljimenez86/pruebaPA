@@ -7,7 +7,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes">
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
   <meta name="apple-mobile-web-app-title" content="Pérez Araujo">
-  <title>Política de privacidad | Inmobiliaria Pérez Araujo</title>
+  <title data-i18n="meta.title_politica">Política de privacidad | Inmobiliaria Pérez Araujo</title>
   <link rel="icon" type="image/png" href="image/logo/PerezAraujoLogo.png">
   <link rel="apple-touch-icon" sizes="180x180" href="image/logo/PerezAraujoLogo.png">
   <link rel="manifest" href="manifest.json">
@@ -16,11 +16,21 @@
   <link href="https://fonts.googleapis.com/css2?family=Libre+Baskerville:wght@400;700&family=Source+Sans+3:wght@400;600;700&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="css/styles.css">
   <style>
-    .politica { max-width: 48rem; margin: 0 auto; padding: 1.5rem 1rem 3rem; }
-    .politica h1 { font-family: 'Libre Baskerville', serif; font-size: 1.5rem; color: var(--dorado); margin: 0 0 0.5rem; }
-    .politica h2 { font-family: 'Libre Baskerville', serif; font-size: 1.15rem; color: var(--dorado); margin: 2rem 0 0.75rem; }
-    .politica h3 { font-size: 1rem; color: var(--dorado-claro); margin: 1.25rem 0 0.5rem; font-weight: 600; }
-    .politica p, .politica li { font-size: 0.95rem; line-height: 1.6; color: var(--blanco); margin: 0 0 0.75rem; }
+    .politica {
+      max-width: 48rem;
+      margin: 0 auto;
+      padding: 1.5rem 1.15rem 2.5rem;
+      background: var(--panel-sobre-fondo);
+      backdrop-filter: blur(var(--panel-sobre-fondo-blur));
+      -webkit-backdrop-filter: blur(var(--panel-sobre-fondo-blur));
+      border-radius: 14px;
+      border: 1px solid var(--panel-sobre-fondo-borde);
+      box-shadow: var(--panel-sobre-fondo-sombra);
+    }
+    .politica h1 { font-family: 'Libre Baskerville', serif; font-size: 1.5rem; color: var(--dorado-oscuro); margin: 0 0 0.5rem; }
+    .politica h2 { font-family: 'Libre Baskerville', serif; font-size: 1.15rem; color: var(--dorado-oscuro); margin: 2rem 0 0.75rem; }
+    .politica h3 { font-size: 1rem; color: var(--dorado-oscuro); margin: 1.25rem 0 0.5rem; font-weight: 600; }
+    .politica p, .politica li { font-size: 0.95rem; line-height: 1.6; color: var(--texto-sobre-fondo); margin: 0 0 0.75rem; }
     .politica ul, .politica ol { margin: 0 0 1rem 1.25rem; padding: 0; }
     .politica li { margin-bottom: 0.35rem; }
     .politica .intro { font-size: 1rem; margin-bottom: 1.5rem; }
@@ -28,16 +38,45 @@
     .politica a:hover { text-decoration: underline; }
   </style>
 </head>
-<body>
+<body data-i18n-page="politica">
   <header class="header">
-    <a href="index.html" class="logo-link" aria-label="Inicio">
+    <a href="index.html" class="logo-link" data-i18n-aria="header.logo_aria" aria-label="Inicio">
       <img src="image/logo/PerezAraujoLogo.png" alt="Inmobiliaria Pérez Araujo" class="logo">
     </a>
     <p class="header__nit">NIT. 901189003-2</p>
     <nav class="nav" aria-label="Principal">
-      <a href="index.html">Inicio</a>
-      <a href="publicar.html">Publicar</a>
-      <a href="index.html#quienes-somos">Quiénes somos</a>
+      <a href="index.html" data-i18n="nav.home">Inicio</a>
+      <a href="publicar.html" data-i18n="nav.publish">Publicar</a>
+      <a href="index.html#quienes-somos" data-i18n="nav.about">Quiénes somos</a>
+      <div class="header-lang">
+        <span class="header-lang__label" id="header-lang-label" data-i18n="lang.label">Idioma</span>
+        <div class="header-lang-wrap" id="header-lang-wrap">
+          <button type="button" class="header-lang__trigger" id="header-lang-trigger" aria-haspopup="listbox" aria-expanded="false" aria-labelledby="header-lang-label">
+            <span class="header-lang__trigger-inner" id="header-lang-trigger-inner">
+              <img src="https://flagcdn.com/es.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span class="header-lang__name">Español</span>
+            </span>
+          </button>
+          <div class="header-lang-list oculto" id="header-lang-list" role="listbox" aria-labelledby="header-lang-label">
+            <button type="button" class="header-lang-item" role="option" data-lang="es">
+              <img src="https://flagcdn.com/es.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Español</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="en">
+              <img src="https://flagcdn.com/gb.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>English</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="pt">
+              <img src="https://flagcdn.com/br.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Português</span>
+            </button>
+            <button type="button" class="header-lang-item" role="option" data-lang="ru">
+              <img src="https://flagcdn.com/ru.svg" alt="" class="header-lang__flag" width="22" height="16" aria-hidden="true">
+              <span>Русский</span>
+            </button>
+          </div>
+        </div>
+      </div>
     </nav>
   </header>
 
@@ -207,9 +246,10 @@
 
   <footer class="footer">
     <img src="image/logo/PerezAraujoLogo.png" alt="" class="footer-logo" width="160" height="80">
-    <p class="footer-dev">2026 Inmobiliaria Pérez Araujo. Todos los derechos reservados a Emil Jiménez Ortiz — Desarrollador Web</p>
+    <p class="footer-dev" data-i18n="footer.rights">2026 Inmobiliaria Pérez Araujo. Todos los derechos reservados a Emil Jiménez Ortiz — Desarrollador Web</p>
   </footer>
 
+  <script src="js/i18n.js"></script>
   <script src="js/datos.js"></script>
   <script src="js/colombia-data.js"></script>
   <script src="js/PaisesBanderas-data.js"></script>
