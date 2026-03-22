@@ -1,4 +1,5 @@
 /* Inmobiliaria Pérez Araujo - Mobile first, negro y dorado */
+/* Cache bust (fondo): sube el número en ?v= al reemplazar PNGs con el mismo nombre. */
 
 :root {
   --negro: #0a0a0a;
@@ -20,8 +21,8 @@
   --radio: 8px;
   --sombra: 0 2px 12px rgba(0,0,0,0.4);
   /* Fondo: móvil (ancho < 768px) vs escritorio. Sustituye FondoPerezAraujo-movil.png por tu arte vertical. */
-  --app-fondo-movil: url("../image/fondo/FondoPerezAraujo-movil.png");
-  --app-fondo-escritorio: url("../image/fondo/FondoPerezAraujo.png");
+  --app-fondo-movil: url("../image/fondo/FondoPerezAraujo-movil.png?v=2");
+  --app-fondo-escritorio: url("../image/fondo/FondoPerezAraujo.png?v=2");
 }
 
 *,
@@ -428,6 +429,37 @@ a:hover, a:focus-visible {
   display: block;
   width: 100%;
   height: auto;
+}
+
+/* Contenedor 16:9 para iframes (Drive, TikTok, etc.) en video institucional */
+.video-embed-aspect {
+  position: relative;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+}
+.video-embed-aspect iframe,
+.video-embed-aspect video {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: none;
+  object-fit: contain;
+}
+.video-embed__iframe {
+  display: block;
+}
+.video-embed__external {
+  display: inline-flex;
+  margin: 0 auto;
+}
+.video-embed--link-only {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100px;
+  padding: 0.75rem;
 }
 
 /* Buscar / Filtros */
