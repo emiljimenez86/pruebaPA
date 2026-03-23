@@ -252,12 +252,104 @@ a:hover, a:focus-visible {
   z-index: 2;
 }
 .nav a {
-  padding: 0.5rem 0.75rem;
+  padding: 0.55rem 0.95rem;
   min-height: var(--touch-min);
   display: inline-flex;
   align-items: center;
-  font-weight: 600;
-  font-size: 0.95rem;
+  font-weight: 700;
+  font-size: 1.08rem;
+  letter-spacing: 0.04em;
+  text-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.8),
+    0 0 18px rgba(0, 0, 0, 0.4);
+  border-radius: 10px;
+  transition:
+    color 0.2s ease,
+    background 0.2s ease,
+    box-shadow 0.2s ease,
+    transform 0.2s ease;
+}
+.nav a:hover,
+.nav a:focus-visible {
+  color: var(--dorado-claro);
+  text-decoration: none;
+  background: rgba(201, 162, 39, 0.14);
+  box-shadow:
+    0 0 0 1px rgba(229, 199, 107, 0.45),
+    0 6px 20px rgba(0, 0, 0, 0.45);
+  transform: translateY(-2px);
+}
+@media (prefers-reduced-motion: reduce) {
+  .nav a {
+    transition: none;
+  }
+  .nav a:hover,
+  .nav a:focus-visible {
+    transform: none;
+  }
+}
+@media (min-width: 600px) {
+  .nav a {
+    font-size: 1.18rem;
+    padding: 0.6rem 1.15rem;
+  }
+}
+
+/* Móvil: los tres enlaces en una sola fila; idioma debajo centrado */
+@media (max-width: 599px) {
+  .header {
+    padding-left: max(0.75rem, env(safe-area-inset-left, 0px));
+    padding-right: max(0.75rem, env(safe-area-inset-right, 0px));
+  }
+  .header .nav {
+    width: 100%;
+    max-width: 100%;
+    box-sizing: border-box;
+    justify-content: center;
+    align-items: stretch;
+    flex-wrap: wrap;
+    gap: 0.35rem;
+    row-gap: 0.45rem;
+    padding: 0.15rem 0 0;
+  }
+  .header .nav > .header-lang {
+    flex-basis: 100%;
+    justify-content: center;
+    margin-top: 0.15rem;
+  }
+  .nav a {
+    justify-content: center;
+    text-align: center;
+    padding: 0.58rem 0.3rem;
+    font-size: clamp(0.78rem, 2.85vw + 0.35rem, 1.02rem);
+    letter-spacing: 0.015em;
+    line-height: 1.15;
+    -webkit-tap-highlight-color: rgba(201, 162, 39, 0.28);
+    touch-action: manipulation;
+  }
+  .nav a:not([href*="#quienes-somos"]) {
+    flex: 1 1 0;
+    min-width: 0;
+    overflow-wrap: break-word;
+  }
+  /* Un solo renglón: no repartir en columnas estrechas que partan el texto */
+  .nav a[href*="#quienes-somos"] {
+    flex: 0 0 auto;
+    min-width: min-content;
+    white-space: nowrap;
+    overflow-wrap: normal;
+    padding-left: 0.35rem;
+    padding-right: 0.35rem;
+  }
+  .nav a:active {
+    background: rgba(201, 162, 39, 0.22);
+    transform: scale(0.98);
+  }
+}
+@media (max-width: 599px) and (prefers-reduced-motion: reduce) {
+  .nav a:active {
+    transform: none;
+  }
 }
 
 /* Selector de idioma con banderas (header) */
