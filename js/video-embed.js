@@ -66,13 +66,13 @@
     if (!url) return null;
     if (!/^https?:\/\//i.test(url) && !/^\//.test(url)) {
       if (/\.(mp4|webm)(\?.*)?$/i.test(url)) {
-        return { mode: 'video', src: url };
+        return { mode: 'video', src: url, portrait: false };
       }
       return null;
     }
 
     if (/\.(mp4|webm)(\?.*)?$/i.test(url.split('?')[0] || url)) {
-      return { mode: 'video', src: url };
+      return { mode: 'video', src: url, portrait: false };
     }
 
     var yid = extractYoutubeId(url);
@@ -86,7 +86,11 @@
 
     var did = extractDriveFileId(url);
     if (did) {
-      return { mode: 'iframe', src: 'https://drive.google.com/file/d/' + did + '/preview' };
+      return {
+        mode: 'iframe',
+        src: 'https://drive.google.com/file/d/' + did + '/preview',
+        portrait: false
+      };
     }
 
     if (/fb\.watch\//i.test(url) || /vm\.tiktok\.com\//i.test(url) || /tiktok\.com\/t\//i.test(url)) {
@@ -96,7 +100,8 @@
     if (isFacebookHost(url)) {
       return {
         mode: 'iframe',
-        src: 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url) + '&show_text=false&width=1280'
+        src: 'https://www.facebook.com/plugins/video.php?href=' + encodeURIComponent(url) + '&show_text=false&width=1280',
+        portrait: false
       };
     }
 
@@ -129,7 +134,10 @@
     var r = resolve(url);
     if (!r) return;
 
-    var portrait = r.portrait === true || opts.forcePortrait === true;
+    /* Vertical solo si la URL lo pide (Shorts, Reel, TikTok) o el panel no contradice explícitamente "horizontal". */
+    var portrait =
+      r.portrait === true ||
+      (opts.forcePortrait === true && r.portrait !== false);
 
     var skipAspect = opts.skipAspectClass === true;
     var title = opts.title || 'Video';

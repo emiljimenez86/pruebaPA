@@ -1,5 +1,5 @@
 /**
- * Idiomas: es (por defecto), en, pt, ru. Preferencia en localStorage (perez-araujo-lang).
+ * Idiomas: es (por defecto), en, pt, ru, ar. Preferencia en localStorage (perez-araujo-lang).
  */
 (function () {
   'use strict';
@@ -555,12 +555,150 @@
       'pub.ph_sel': 'Выберите',
       'pwa.alert_android': 'Автоустановка здесь недоступна.\n\nДобавьте на главный экран: меню браузера (⋮) → «На экран Домой» или «Установить приложение».',
       'pwa.alert_other': 'Установка доступна в Chrome для Android. На этом устройстве пользуйтесь сайтом в браузере.'
+    },
+    ar: {
+      'meta.title_index': 'بيريث أراوخو للعقارات | بيع وإيجار',
+      'meta.title_publicar': 'نشر عقار | بيريث أراوخو للعقارات',
+      'meta.title_propiedad': 'عقار | بيريث أراوخو للعقارات',
+      'meta.title_politica': 'سياسة الخصوصية | بيريث أراوخو للعقارات',
+      'lang.label': 'اللغة',
+      'nav.home': 'الرئيسية',
+      'nav.publish': 'نشر عقار',
+      'nav.about': 'من نحن',
+      'header.logo_aria': 'الرئيسية',
+      'hero.title': 'مكانك، لحظتك — اعثر عليه!',
+      'hero.subtitle': 'البيع والإيجار حسب المدينة والبلدية',
+      'video_youtube.aria': 'فيديو',
+      'video_youtube.title_iframe': 'فيديو بيريث أراوخو للعقارات',
+      'buscar.title': 'بحث',
+      'buscar.aria': 'البحث عن العقارات',
+      'label.country': 'البلد',
+      'label.department': 'الإدارة / الولاية',
+      'label.municipality': 'البلدية / المدينة',
+      'label.type': 'النوع',
+      'filtro_pais_list_aria': 'اختر البلد',
+      'opt.all_dept': 'جميع الإدارات',
+      'opt.all_mun': 'جميع البلديات',
+      'opt.type_any': 'بيع أو إيجار',
+      'opt.type_sale': 'بيع',
+      'opt.type_rent': 'إيجار',
+      'opt.type_daily': 'إيجار يومي',
+      'btn.search': 'بحث',
+      'props.title': 'العقارات',
+      'props.aria': 'العقارات',
+      'props.info_none': 'لم يُعثر على عقارات.',
+      'props.info_one': 'عقار واحد.',
+      'props.info_many': '{n} عقاراً.',
+      'props.empty_filters': 'لا توجد عقارات تطابق هذه المرشحات.',
+      'props.empty_cta': 'نشر عقار',
+      'video_local.aria': 'فيديو تعريفي',
+      'video_local.fallback': 'متصفحك لا يدعم تشغيل الفيديو المضمن.',
+      'video_embed.open_tab': 'فتح الفيديو في تاب جديد',
+      'about.title': 'من نحن',
+      'about.text': 'بيريث أراوخو للعقارات شريكك في البحث عن المنزل المثالي. نتخصص في بيع وإيجار العقارات في كولومبيا، بخدمة مخصصة وفريق ملتزم بمساعدتك على إيجاد أفضل خيار أو نشر عقارك.',
+      'about.cta': 'لديك استفسار أو ترغب في نشر عقار؟',
+      'contact.wa_span': 'راسلنا عبر واتساب',
+      'ios.title': 'لتثبيت هذا التطبيق على آيفونك:',
+      'ios.li1': 'اضغط زر المشاركة ⬆️ في سفاري.',
+      'ios.li2': 'اختر <strong>إضافة إلى الشاشة الرئيسية</strong>.',
+      'ios.li3': 'أكد بالضغط على <strong>إضافة</strong>.',
+      'ios.close': 'إغلاق',
+      'install.btn': 'تثبيت التطبيق',
+      'install.aria': 'تثبيت التطبيق',
+      'footer.rights': '2026 بيريث أراوخو للعقارات. جميع الحقوق محفوظة — إميل خيمينيث أورتيز، مطوّر ويب',
+      'tarjeta.fotos_mas': '+{n} صور',
+      'tarjeta.ver_video': '🎬 مشاهدة الفيديو',
+      'tarjeta.venta': 'بيع',
+      'tarjeta.arriendo': 'إيجار',
+      'tarjeta.por_dia': ' في اليوم',
+      'tarjeta.codigo': 'رمز العقار: ',
+      'tarjeta.ver_mas': 'المزيد من الصور والفيديو',
+      'tarjeta.fecha_in': 'تاريخ الوصول',
+      'tarjeta.fecha_out': 'تاريخ المغادرة',
+      'tarjeta.adultos': 'بالغون',
+      'tarjeta.ninos': 'أطفال',
+      'tarjeta.whatsapp': 'استفسار عبر واتساب',
+      'tarjeta.sin_ubicacion': 'بدون موقع',
+      'tarjeta.consultar_precio': 'استفسر',
+      'detalle.cargando': 'جاري التحميل...',
+      'detalle.no_encontrado': 'لم يُعثر على العقار.',
+      'detalle.volver': 'العودة إلى القائمة',
+      'detalle.galeria_aria': 'معرض الصور',
+      'detalle.toca_amp': 'اضغط للتكبير',
+      'detalle.video': 'فيديو',
+      'detalle.ver_video_ext': '🎬 مشاهدة الفيديو',
+      'detalle.whatsapp': 'استفسار عبر واتساب',
+      'detalle.foto_ant': 'الصورة السابقة',
+      'detalle.foto_sig': 'الصورة التالية',
+      'detalle.ir_foto': 'انتقل إلى الصورة {n}',
+      'detalle.cerrar': 'إغلاق',
+      'detalle.amp_ant': 'السابق',
+      'detalle.amp_sig': 'التالي',
+      'detalle.codigo': 'رمز العقار: ',
+      'detalle.tap_more': 'اضغط للتكبير',
+      'msg.wa_general': 'مرحباً، دخلت من موقع بيريث أراوخو للعقارات. أرغب في معلومات عن العقارات (بيع أو إيجار).',
+      'msg.wa_prop_sale': 'مرحباً، أهتم بهذا العقار للشراء:\n\n',
+      'msg.wa_prop_rent': 'مرحباً، أهتم بهذا العقار للإيجار:\n\n',
+      'msg.wa_prop_footer': '\n\nرأيت الإعلان في تطبيق بيريث أراوخو للعقارات على الويب.',
+      'msg.wa_prop_codigo': 'رمز العقار: ',
+      'msg.wa_dia': 'مرحباً، أهتم بهذا العقار للإيجار اليومي:\n\n',
+      'msg.wa_dia_line_in': '*تاريخ الوصول:* ',
+      'msg.wa_dia_line_out': '*تاريخ المغادرة:* ',
+      'msg.wa_dia_adultos': '*البالغون:* ',
+      'msg.wa_dia_ninos': '*الأطفال:* ',
+      'msg.wa_sin_codigo': 'بدون رمز',
+      'pub.hero_title': 'نشر عقار',
+      'pub.hero_sub': 'املأ البيانات وسنفتح واتساب لترسل إلينا إعلانك.',
+      'pub.label_nombre': 'الاسم الكامل *',
+      'pub.ph_nombre': 'مثال: أحمد محمد',
+      'pub.label_tel': 'رقم الجوال *',
+      'pub.ph_tel': 'مثال: 300 123 4567',
+      'pub.label_email': 'البريد الإلكتروني *',
+      'pub.ph_email': 'مثال: name@example.com',
+      'pub.label_pais': 'البلد *',
+      'pub.label_dept': 'الإدارة / الولاية',
+      'pub.label_mun': 'البلدية / المدينة',
+      'pub.opt_sel_dept': 'اختر الإدارة',
+      'pub.opt_sel_mun': 'اختر البلدية',
+      'pub.pais_list_aria': 'اختر البلد',
+      'pub.label_zona': 'المنطقة / الحي',
+      'pub.ph_zona': 'مثال: وسط المدينة، إلخ.',
+      'pub.label_tipo_inm': 'نوع العقار *',
+      'pub.opt_tipo_inm': 'اختر نوع العقار',
+      'pub.label_valor': 'القيمة التقديرية',
+      'pub.ph_valor': 'مثال: 150000000 أو 1200000/شهر',
+      'pub.label_mensaje': 'رسالتك *',
+      'pub.ph_mensaje': 'صف العقار والميزات وطريقة التواصل المفضلة...',
+      'pub.politica': 'أوافق على ',
+      'pub.politica_link': 'سياسة معالجة البيانات',
+      'pub.politica_fin': ' *',
+      'pub.nota': 'عند الإرسال يُفتح واتساب برسالة جاهزة. أرسلها لننشر إعلانك.',
+      'pub.btn': 'إرسال عبر واتساب',
+      'opt.todos': 'الكل',
+      'pub.alert_politica': 'يجب الموافقة على سياسة معالجة البيانات للمتابعة.',
+      'pub.wa_1': 'مرحباً، أرغب في *نشر* عقار على موقع بيريث أراوخو للعقارات.',
+      'pub.wa_name': '*الاسم:* ',
+      'pub.wa_cell': '*الجوال:* ',
+      'pub.wa_email': '*البريد:* ',
+      'pub.wa_country': '*البلد:* ',
+      'pub.wa_dept': '*الإدارة:* ',
+      'pub.wa_mun': '*البلدية:* ',
+      'pub.wa_zone': '*المنطقة / الحي:* ',
+      'pub.wa_type': '*نوع العقار:* ',
+      'pub.wa_price': '*القيمة التقديرية:* ',
+      'pub.wa_msg': '*الرسالة:*',
+      'pub.wa_valor_def': 'حسب الاتفاق',
+      'pub.wa_footer': '_(أُرسل من نموذج «نشر عقار» على الموقع)_',
+      'pub.ph_sel': 'اختر',
+      'pwa.alert_android': 'لا يمكن استخدام المثبّت التلقائي هنا.\n\nلإضافة الشاشة الرئيسية: قائمة المتصفح (⋮) → «إضافة إلى الشاشة الرئيسية» أو «تثبيت التطبيق».',
+      'pwa.alert_other': 'التثبيت متاح في كروم على أندرويد. على هذا الجهاز استخدم الموقع من المتصفح.'
     }
   };
 
   function normalizeLang(code) {
     if (!code || typeof code !== 'string') return FALLBACK;
     var c = code.toLowerCase().split('-')[0];
+    if (c === 'ar') return 'ar';
     if (c === 'ru') return 'ru';
     if (c === 'pt') return 'pt';
     if (c === 'en') return 'en';
@@ -601,6 +739,7 @@
     var lang = getLang();
     var htmlLang = lang === 'pt' ? 'pt-BR' : lang;
     document.documentElement.setAttribute('lang', htmlLang);
+    document.documentElement.setAttribute('dir', lang === 'ar' ? 'rtl' : 'ltr');
 
     base.querySelectorAll('[data-i18n]').forEach(function (el) {
       var key = el.getAttribute('data-i18n');
@@ -642,7 +781,8 @@
     { code: 'es', flag: 'es', label: 'Español' },
     { code: 'en', flag: 'gb', label: 'English' },
     { code: 'pt', flag: 'br', label: 'Português' },
-    { code: 'ru', flag: 'ru', label: 'Русский' }
+    { code: 'ru', flag: 'ru', label: 'Русский' },
+    { code: 'ar', flag: 'ae', label: 'العربية' }
   ];
 
   function langUiMeta(code) {
@@ -681,14 +821,60 @@
     var current = getLang();
     renderLangTriggerInner(inner, current);
 
+    function clearLangListPlacement() {
+      list.style.position = '';
+      list.style.top = '';
+      list.style.left = '';
+      list.style.right = '';
+      list.style.minWidth = '';
+      list.style.zIndex = '';
+    }
+
+    function syncLangListPosition() {
+      if (list.classList.contains('oculto')) return;
+      var r = trigger.getBoundingClientRect();
+      var gap = 4;
+      var pad = 8;
+      var minW = Math.max(r.width, 176);
+      var vw = window.innerWidth;
+      list.style.position = 'fixed';
+      list.style.top = r.bottom + gap + 'px';
+      list.style.minWidth = minW + 'px';
+      /* Debajo del lightbox de fotos (100), por encima del main y la UI fija */
+      list.style.zIndex = '95';
+      if (document.documentElement.getAttribute('dir') === 'rtl') {
+        var right = vw - r.right;
+        right = Math.max(pad, Math.min(right, vw - minW - pad));
+        list.style.left = 'auto';
+        list.style.right = right + 'px';
+      } else {
+        var left = r.left;
+        left = Math.max(pad, Math.min(left, vw - minW - pad));
+        list.style.left = left + 'px';
+        list.style.right = 'auto';
+      }
+    }
+
+    var onLangListScrollOrResize = function () {
+      syncLangListPosition();
+    };
+
     function closeList() {
       list.classList.add('oculto');
       trigger.setAttribute('aria-expanded', 'false');
+      clearLangListPlacement();
+      window.removeEventListener('scroll', onLangListScrollOrResize, true);
+      window.removeEventListener('resize', onLangListScrollOrResize);
     }
 
     function openList() {
       list.classList.remove('oculto');
       trigger.setAttribute('aria-expanded', 'true');
+      requestAnimationFrame(function () {
+        syncLangListPosition();
+        window.addEventListener('scroll', onLangListScrollOrResize, true);
+        window.addEventListener('resize', onLangListScrollOrResize);
+      });
     }
 
     trigger.addEventListener('click', function () {

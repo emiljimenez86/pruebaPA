@@ -195,6 +195,11 @@
 .admin-form .btn-enviar {
   margin-top: 1rem;
 }
+
+.admin-checkbox-label--negro,
+.admin-checkbox-label--negro span {
+  color: #0a0a0a;
+}
 .admin-hint {
   font-size: 0.8rem;
   color: var(--texto-sobre-fondo-muted);

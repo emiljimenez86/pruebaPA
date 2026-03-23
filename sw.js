@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inmobiliaria-perez-araujo-v9';
+const CACHE_NAME = 'inmobiliaria-perez-araujo-v16';
 
 const APP_SHELL = [
   './',
