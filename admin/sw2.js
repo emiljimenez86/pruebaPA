@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inmobiliaria-admin-v1';
+const CACHE_NAME = 'inmobiliaria-admin-v2';
 
 const APP_SHELL = [
   '/admin/',
@@ -10,7 +10,7 @@ const APP_SHELL = [
   '/js/colombia-data.js',
   '/js/PaisesBanderas-data.js',
   '/js/firebase-app.js',
-  '/image/logo/PerezAraujoLogo.png'
+  '/image/logo/LogoOriginalInmobiliariaPerezAraujo.png'
 ];
 
 self.addEventListener('install', (event) => {

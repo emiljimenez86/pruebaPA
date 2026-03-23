@@ -23,6 +23,8 @@
   /* Fondo: móvil (ancho < 768px) vs escritorio. Sustituye FondoPerezAraujo-movil.png por tu arte vertical. */
   --app-fondo-movil: url("../image/fondo/FondoPerezAraujo-movil.png?v=2");
   --app-fondo-escritorio: url("../image/fondo/FondoPerezAraujo.png?v=2");
+  /* Fondo del header: sube ?v= si cambias FondoHeader.png */
+  --header-fondo: url("../image/fondo/FondoHeader.png?v=1");
 }
 
 *,
@@ -88,18 +90,75 @@ a:hover, a:focus-visible {
   text-decoration: underline;
 }
 
-/* Header: no fijo, scroll con la página */
+/* Header: imagen FondoHeader.png + velo oscuro (legibilidad menú/NIT) + halos suaves */
 .header {
   position: relative !important;
   top: auto !important;
-  background: var(--negro);
-  border-bottom: 1px solid rgba(201, 162, 39, 0.3);
+  overflow-x: hidden;
+  overflow-y: visible;
+  isolation: isolate;
   padding: 1rem;
+  padding-bottom: 1.15rem;
   display: flex;
   flex-direction: column;
   align-items: center;
   justify-content: center;
   gap: 0.75rem;
+  background-color: #0c0e12;
+  background-image:
+    linear-gradient(
+      158deg,
+      rgba(12, 14, 20, 0.78) 0%,
+      rgba(10, 11, 16, 0.72) 45%,
+      rgba(8, 9, 12, 0.82) 100%
+    ),
+    var(--header-fondo);
+  /* Capa 1 (velo): cubre todo. Capa 2 (imagen): cover = llena el header (puede recortar) */
+  background-size: 100% 100%, cover;
+  background-position: center center, center center;
+  background-repeat: no-repeat, no-repeat;
+  border-bottom: none;
+  box-shadow:
+    0 8px 32px rgba(0, 0, 0, 0.45),
+    inset 0 1px 0 rgba(255, 255, 255, 0.045);
+}
+
+.header::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  background:
+    radial-gradient(ellipse 100% 85% at 50% -30%, rgba(201, 162, 39, 0.1) 0%, transparent 52%),
+    radial-gradient(ellipse 55% 45% at 85% 105%, rgba(201, 162, 39, 0.05) 0%, transparent 45%),
+    radial-gradient(ellipse 40% 35% at 12% 90%, rgba(90, 120, 160, 0.04) 0%, transparent 50%);
+  opacity: 1;
+}
+
+.header::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 2px;
+  z-index: 0;
+  pointer-events: none;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(201, 162, 39, 0.15) 18%,
+    rgba(229, 199, 107, 0.55) 50%,
+    rgba(201, 162, 39, 0.15) 82%,
+    transparent 100%
+  );
+  box-shadow: 0 0 20px rgba(201, 162, 39, 0.2);
+}
+
+.header > * {
+  position: relative;
+  z-index: 1;
 }
 
 .logo-link {
@@ -107,29 +166,79 @@ a:hover, a:focus-visible {
   text-decoration: none;
   display: block;
   text-align: center;
+  padding: 0.25rem 0.5rem 1rem;
+  margin: 0 auto;
+  max-width: 100%;
+}
+.logo-link:focus-visible {
+  outline: none;
+}
+.logo-link:focus-visible .logo {
+  outline: 2px solid var(--dorado-claro);
+  outline-offset: 4px;
 }
 .header__nit {
   margin: 0;
-  color: var(--blanco);
+  color: rgba(248, 246, 240, 0.92);
   font-weight: 700;
   font-family: 'Libre Baskerville', serif;
   font-size: 0.95rem;
-  letter-spacing: 0.03em;
-  text-shadow: 0 0 10px rgba(245, 245, 245, 0.18);
+  letter-spacing: 0.08em;
+  text-shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 0 24px rgba(201, 162, 39, 0.12);
   text-transform: uppercase;
 }
+/* Logo nítido: sin perspective/rotate ni filter (evitan blur y sensación “lejos”). Marco con sombras suaves. */
 .logo {
   max-height: 220px;
   width: auto;
+  height: auto;
   margin: 0 auto;
   display: block;
-  border-radius: 16px;
-  border: 2px solid #1a1a1a;
+  border-radius: 14px;
+  position: relative;
+  transform: translateY(-8px);
+  border: 1px solid rgba(229, 199, 107, 0.42);
+  image-rendering: auto;
   box-shadow:
-    0 8px 24px rgba(0, 0, 0, 0.7),
-    0 4px 12px rgba(0, 0, 0, 0.5),
-    -2px -2px 8px rgba(255, 255, 255, 0.04),
-    inset 0 1px 0 rgba(255, 255, 255, 0.03);
+    inset 0 1px 0 rgba(255, 255, 255, 0.18),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(10, 12, 16, 0.9),
+    0 4px 6px rgba(0, 0, 0, 0.35),
+    0 12px 28px rgba(0, 0, 0, 0.42),
+    0 24px 48px rgba(0, 0, 0, 0.28),
+    0 0 40px rgba(201, 162, 39, 0.1);
+  transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.logo-link:hover .logo,
+.logo-link:focus-visible .logo {
+  transform: translateY(-12px);
+  box-shadow:
+    inset 0 1px 0 rgba(255, 255, 255, 0.22),
+    inset 0 -1px 0 rgba(0, 0, 0, 0.18),
+    0 0 0 1px rgba(201, 162, 39, 0.35),
+    0 0 0 2px rgba(10, 12, 16, 0.92),
+    0 6px 10px rgba(0, 0, 0, 0.38),
+    0 16px 36px rgba(0, 0, 0, 0.45),
+    0 28px 56px rgba(0, 0, 0, 0.3),
+    0 0 48px rgba(201, 162, 39, 0.14);
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .logo,
+  .logo-link:hover .logo,
+  .logo-link:focus-visible .logo {
+    transition: none;
+    transform: translateY(-6px);
+    box-shadow:
+      inset 0 1px 0 rgba(255, 255, 255, 0.18),
+      inset 0 -1px 0 rgba(0, 0, 0, 0.2),
+      0 0 0 1px rgba(10, 12, 16, 0.9),
+      0 4px 6px rgba(0, 0, 0, 0.35),
+      0 12px 28px rgba(0, 0, 0, 0.42),
+      0 24px 48px rgba(0, 0, 0, 0.28),
+      0 0 40px rgba(201, 162, 39, 0.1);
+  }
 }
 
 .nav {
@@ -138,6 +247,7 @@ a:hover, a:focus-visible {
   justify-content: center;
   flex-wrap: wrap;
   align-items: center;
+  z-index: 2;
 }
 .nav a {
   padding: 0.5rem 0.75rem;
@@ -1388,12 +1498,14 @@ input.input {
     justify-content: center;
     position: relative !important;
     flex-wrap: wrap; /* Permite que el NIT baje debajo del logo en escritorio */
+    padding: 1.1rem 1.25rem 1.2rem;
   }
   .header .nav {
     position: absolute;
     right: 1rem;
     top: 50%;
     transform: translateY(-50%);
+    z-index: 2;
   }
   .header__nit {
     flex-basis: 100%;

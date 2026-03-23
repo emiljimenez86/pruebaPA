@@ -1,4 +1,4 @@
-const CACHE_NAME = 'inmobiliaria-perez-araujo-v7';
+const CACHE_NAME = 'inmobiliaria-perez-araujo-v9';
 
 const APP_SHELL = [
   './',
@@ -12,7 +12,8 @@ const APP_SHELL = [
   './js/firebase-app.js',
   './js/i18n.js',
   './js/video-embed.js',
-  './image/logo/PerezAraujoLogo.png'
+  './image/logo/LogoOriginalInmobiliariaPerezAraujo.png',
+  './image/fondo/FondoHeader.png'
 ];
 
 self.addEventListener('install', (event) => {
