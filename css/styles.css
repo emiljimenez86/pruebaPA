@@ -23,6 +23,8 @@
   /* Fondo: móvil (ancho < 768px) vs escritorio. Sustituye FondoPerezAraujo-movil.png por tu arte vertical. */
   --app-fondo-movil: url("../image/fondo/FondoPerezAraujo-movil.png?v=2");
   --app-fondo-escritorio: url("../image/fondo/FondoPerezAraujo.png?v=2");
+  /* Capa gris sobre la imagen de fondo (suaviza blancos); sube/baja el último valor (opacidad) */
+  --fondo-overlay-gris: rgba(42, 44, 48, 0.58);
   /* Fondo del header: sube ?v= si cambias FondoHeader.png */
   --header-fondo: url("../image/fondo/FondoHeader.png?v=1");
 }
@@ -58,13 +60,23 @@ body::before {
   content: "";
   position: fixed;
   inset: 0;
-  z-index: -1;
+  z-index: -2;
   pointer-events: none;
   background-color: var(--negro);
   background-image: var(--app-fondo-movil);
   background-size: contain;
   background-position: center center;
   background-repeat: no-repeat;
+}
+
+/* Velo gris sobre toda el área del fondo (imagen + bandas); suaviza blancos */
+body::after {
+  content: "";
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+  background: var(--fondo-overlay-gris);
 }
 
 @media (min-width: 768px) {
@@ -470,7 +482,8 @@ a:hover, a:focus-visible {
 .main > .video-youtube,
 .main > .buscar,
 .main > .video-local,
-.main > .quienes-somos {
+.main > .quienes-somos,
+.main > .socio-abogados {
   background: var(--panel-sobre-fondo);
   backdrop-filter: blur(var(--panel-sobre-fondo-blur));
   -webkit-backdrop-filter: blur(var(--panel-sobre-fondo-blur));
@@ -538,6 +551,10 @@ a:hover, a:focus-visible {
   margin-top: 0.25rem;
   border-top: none;
 }
+.main > .socio-abogados {
+  padding: 1.15rem 1rem 1.35rem;
+  margin: 0.75rem 0 0;
+}
 
 .main-form {
   max-width: 28rem;
@@ -573,13 +590,16 @@ a:hover, a:focus-visible {
 .main .buscar h2,
 .main .listado-encabezado h2,
 .main .contacto h2,
-.main .quienes-somos h2 {
+.main .quienes-somos h2,
+.main .socio-abogados__titulo {
   color: var(--dorado-oscuro);
   text-shadow: 0 1px 0 rgba(255, 255, 255, 0.92), 0 0 20px rgba(255, 248, 235, 0.45);
 }
 .main .hero p,
 .main .quienes-somos__texto,
-.main .quienes-somos__cta {
+.main .quienes-somos__cta,
+.main .socio-abogados__texto,
+.main .socio-abogados__cta {
   text-shadow: 0 1px 2px rgba(255, 255, 255, 0.75);
 }
 .hero-chico .hero h1 { font-size: 1.5rem; }
@@ -1415,6 +1435,39 @@ input.input {
   margin-top: 1.5rem;
 }
 
+/* Bloque socio / asesoría legal (después de Quiénes somos) */
+.socio-abogados__titulo {
+  font-family: 'Libre Baskerville', serif;
+  font-size: 1.15rem;
+  margin: 0 0 0.75rem;
+}
+.socio-abogados__texto {
+  color: var(--texto-sobre-fondo);
+  font-size: 0.98rem;
+  line-height: 1.55;
+  margin: 0 0 0.85rem;
+}
+.socio-abogados__cta {
+  color: var(--texto-sobre-fondo-muted);
+  font-size: 0.98rem;
+  line-height: 1.5;
+  font-weight: 600;
+  margin: 0;
+}
+.socio-abogados__texto a,
+.socio-abogados__cta a {
+  color: var(--dorado-oscuro);
+  font-weight: 600;
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.socio-abogados__texto a:hover,
+.socio-abogados__texto a:focus-visible,
+.socio-abogados__cta a:hover,
+.socio-abogados__cta a:focus-visible {
+  color: var(--dorado);
+}
+
 /* Contacto (reservado para otras páginas si se necesita) */
 .contacto {
   margin-top: 2rem;
@@ -1717,7 +1770,8 @@ html[dir="rtl"] body {
 html[dir="rtl"] .hero h1,
 html[dir="rtl"] .hero h2,
 html[dir="rtl"] .main > h1,
-html[dir="rtl"] .main h2 {
+html[dir="rtl"] .main h2,
+html[dir="rtl"] .socio-abogados__titulo {
   font-family: 'Noto Sans Arabic', 'Libre Baskerville', serif;
 }
 
