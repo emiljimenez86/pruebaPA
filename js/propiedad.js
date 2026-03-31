@@ -182,16 +182,12 @@
       tt('msg.wa_prop_codigo') + codigo + tt('msg.wa_prop_footer');
     var urlWhatsApp = getWhatsAppUrl(mensaje);
 
+    /* Lightbox fuera de .detalle-wrap: ese bloque usa backdrop-filter y en móvil ancla
+       position:fixed al panel (no a la ventana), provocando franjas negras y recorte. */
     main.innerHTML =
       '<div class="detalle-wrap">' +
         '<a href="index.html" class="detalle-volver">' + escapeHtml(tt('detalle.volver')) + '</a>' +
         galeriaHtml +
-        '<div id="detalle-lightbox" class="detalle-lightbox oculto" aria-hidden="true">' +
-          '<button type="button" class="detalle-lightbox__cerrar" id="lightbox-cerrar" aria-label="' + escapeAttr(tt('detalle.cerrar')) + '">×</button>' +
-          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__prev" id="lightbox-prev" aria-label="' + escapeAttr(tt('detalle.amp_ant')) + '">‹</button>' : '') +
-          '<img class="detalle-lightbox__img" id="lightbox-img" src="" alt="" referrerpolicy="no-referrer">' +
-          (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__next" id="lightbox-next" aria-label="' + escapeAttr(tt('detalle.amp_sig')) + '">›</button>' : '') +
-        '</div>' +
         '<div class="detalle-info">' +
         '<span class="detalle-tipo">' + escapeHtml(tipoLabel) + '</span>' +
         '<h1 class="detalle-titulo">' + escapeHtml(p.titulo) + '</h1>' +
@@ -202,6 +198,14 @@
           videoHtml +
           '<a href="' + escapeAttr(urlWhatsApp) + '" class="btn detalle-whatsapp" target="_blank" rel="noopener">' + escapeHtml(tt('detalle.whatsapp')) + '</a>' +
         '</div>' +
+      '</div>' +
+      '<div id="detalle-lightbox" class="detalle-lightbox oculto" aria-hidden="true">' +
+        '<button type="button" class="detalle-lightbox__cerrar" id="lightbox-cerrar" aria-label="' + escapeAttr(tt('detalle.cerrar')) + '">×</button>' +
+        (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__prev" id="lightbox-prev" aria-label="' + escapeAttr(tt('detalle.amp_ant')) + '">‹</button>' : '') +
+        '<div class="detalle-lightbox__viewport" id="lightbox-viewport" role="img" aria-label="' + escapeAttr(tt('detalle.tap_more')) + '">' +
+          '<img class="detalle-lightbox__img" id="lightbox-img" src="" alt="" referrerpolicy="no-referrer">' +
+        '</div>' +
+        (imagenes.length > 1 ? '<button type="button" class="detalle-lightbox__next" id="lightbox-next" aria-label="' + escapeAttr(tt('detalle.amp_sig')) + '">›</button>' : '') +
       '</div>';
     if (typeof document.title !== 'undefined') {
       document.title = (p.titulo || 'Propiedad') + ' | Inmobiliaria Pérez Araujo';
@@ -265,6 +269,7 @@
     /* Lightbox: tocar imagen para ver a pantalla completa */
     var galleryImg = document.getElementById('detalle-galeria-img');
     var lightbox = document.getElementById('detalle-lightbox');
+    var lightboxViewport = document.getElementById('lightbox-viewport');
     var lightboxImg = document.getElementById('lightbox-img');
     var lightboxCerrar = document.getElementById('lightbox-cerrar');
     var lightboxPrev = document.getElementById('lightbox-prev');
@@ -284,7 +289,35 @@
         }
       };
     }
-    if (galleryImg && lightbox && lightboxImg) {
+    function resetZoomAndScroll() {
+      if (lightboxViewport) {
+        lightboxViewport.classList.remove('is-zoomed');
+        lightboxViewport.scrollLeft = 0;
+        lightboxViewport.scrollTop = 0;
+      }
+    }
+
+    function toggleZoomAt(clientX, clientY) {
+      if (!lightboxViewport) return;
+      var wasZoomed = lightboxViewport.classList.contains('is-zoomed');
+      if (wasZoomed) {
+        resetZoomAndScroll();
+        return;
+      }
+
+      lightboxViewport.classList.add('is-zoomed');
+
+      // Centrar el punto tocado/clicado en la medida de lo posible
+      var rect = lightboxViewport.getBoundingClientRect();
+      var x = clientX - rect.left;
+      var y = clientY - rect.top;
+      var targetLeft = Math.max(0, x + lightboxViewport.scrollLeft - (lightboxViewport.clientWidth / 2));
+      var targetTop = Math.max(0, y + lightboxViewport.scrollTop - (lightboxViewport.clientHeight / 2));
+      lightboxViewport.scrollLeft = targetLeft;
+      lightboxViewport.scrollTop = targetTop;
+    }
+
+    if (galleryImg && lightbox && lightboxImg && lightboxViewport) {
       var lightboxIdx = 0;
       function openLightbox() {
         var src = galleryImg.src;
@@ -299,16 +332,73 @@
         lightbox.setAttribute('aria-hidden', 'false');
         if (lightboxPrev) lightboxPrev.classList.toggle('oculto', imagenes.length <= 1);
         if (lightboxNext) lightboxNext.classList.toggle('oculto', imagenes.length <= 1);
+        resetZoomAndScroll();
       }
       function closeLightbox() {
         lightbox.classList.add('oculto');
         lightbox.setAttribute('aria-hidden', 'true');
+        resetZoomAndScroll();
       }
       galleryImg.addEventListener('click', openLightbox);
       if (lightboxCerrar) lightboxCerrar.addEventListener('click', closeLightbox);
       lightbox.addEventListener('click', function (e) {
         if (e.target === lightbox) closeLightbox();
       });
+
+      // Zoom con desplazamiento
+      // Desktop: doble clic; móvil: un toque
+      lightboxViewport.addEventListener('dblclick', function (e) {
+        e.preventDefault();
+        toggleZoomAt(e.clientX, e.clientY);
+      });
+      lightboxViewport.addEventListener('click', function (e) {
+        // En móviles es más natural un solo toque
+        if ('ontouchstart' in window) {
+          e.preventDefault();
+          toggleZoomAt(e.clientX, e.clientY);
+        }
+      });
+
+      // Arrastrar para mover cuando está en zoom
+      (function enableDragToPan() {
+        var dragging = false;
+        var startX = 0;
+        var startY = 0;
+        var startScrollLeft = 0;
+        var startScrollTop = 0;
+
+        function onPointerDown(e) {
+          if (!lightboxViewport.classList.contains('is-zoomed')) return;
+          if (e.button != null && e.button !== 0) return; // solo click izquierdo
+          dragging = true;
+          startX = e.clientX;
+          startY = e.clientY;
+          startScrollLeft = lightboxViewport.scrollLeft;
+          startScrollTop = lightboxViewport.scrollTop;
+          try { lightboxViewport.setPointerCapture(e.pointerId); } catch (err) {}
+        }
+
+        function onPointerMove(e) {
+          if (!dragging) return;
+          var dx = e.clientX - startX;
+          var dy = e.clientY - startY;
+          lightboxViewport.scrollLeft = startScrollLeft - dx;
+          lightboxViewport.scrollTop = startScrollTop - dy;
+        }
+
+        function endDrag(e) {
+          if (!dragging) return;
+          dragging = false;
+          try { lightboxViewport.releasePointerCapture(e.pointerId); } catch (err) {}
+        }
+
+        lightboxViewport.addEventListener('pointerdown', onPointerDown);
+        lightboxViewport.addEventListener('pointermove', onPointerMove);
+        lightboxViewport.addEventListener('pointerup', endDrag);
+        lightboxViewport.addEventListener('pointercancel', endDrag);
+        lightboxViewport.addEventListener('pointerleave', endDrag);
+      })();
+
       document.addEventListener('keydown', function onKey(e) {
         if (e.key === 'Escape' && !lightbox.classList.contains('oculto')) {
           closeLightbox();
@@ -319,11 +409,13 @@
           e.stopPropagation();
           lightboxIdx = (lightboxIdx - 1 + imagenes.length) % imagenes.length;
           lightboxImg.src = imagenes[lightboxIdx];
+          resetZoomAndScroll();
         });
         lightboxNext.addEventListener('click', function (e) {
           e.stopPropagation();
           lightboxIdx = (lightboxIdx + 1) % imagenes.length;
           lightboxImg.src = imagenes[lightboxIdx];
+          resetZoomAndScroll();
         });
       }
     }

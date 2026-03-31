@@ -1325,6 +1325,9 @@ input.input {
 .detalle-lightbox {
   position: fixed;
   inset: 0;
+  width: 100%;
+  min-height: 100vh;
+  min-height: 100dvh;
   z-index: 100;
   background: rgba(0, 0, 0, 0.95);
   display: flex;
@@ -1336,18 +1339,92 @@ input.input {
 .detalle-lightbox.oculto {
   display: none !important;
 }
-.detalle-lightbox__img {
+.detalle-lightbox__viewport {
+  position: relative;
+  z-index: 0;
   width: 100%;
   height: 100%;
   max-width: 100%;
   max-height: 100%;
-  /* En el lightbox, que la imagen se ajuste a toda la pantalla */
-  object-fit: cover;
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  touch-action: pan-x pan-y;
+  cursor: zoom-in;
+}
+
+.detalle-lightbox__img {
+  max-width: 100%;
+  max-height: 100%;
+  width: auto;
+  height: auto;
+  /* En el lightbox, mostrar completa (sin recorte) */
+  object-fit: contain;
+  user-select: none;
+  -webkit-user-drag: none;
+}
+
+/* En móviles suele verse “barras negras” por el aspect ratio.
+   Preferimos llenar pantalla (recortando un poco) y el usuario puede hacer zoom si necesita detalle. */
+@media (max-width: 599px) {
+  .detalle-lightbox {
+    padding: 0;
+    padding-top: env(safe-area-inset-top, 0px);
+    padding-bottom: env(safe-area-inset-bottom, 0px);
+    height: 100dvh;
+    min-height: 100dvh;
+    /* El viewport va absolute; los botones siguen posicionados respecto al overlay */
+    display: block;
+  }
+  .detalle-lightbox__viewport {
+    position: absolute;
+    z-index: 0;
+    left: 0;
+    right: 0;
+    top: 0;
+    bottom: 0;
+    width: 100%;
+    max-width: none;
+    max-height: none;
+    flex: unset;
+    min-height: 0;
+  }
+  .detalle-lightbox__img {
+    width: 100%;
+    height: 100%;
+    max-width: none;
+    max-height: none;
+    object-fit: cover;
+  }
+}
+
+/* Cuando se hace zoom (doble clic / doble toque), permitir desplazamiento */
+.detalle-lightbox__viewport.is-zoomed {
+  overflow: auto;
+  cursor: grab;
+}
+.detalle-lightbox__viewport.is-zoomed:active {
+  cursor: grabbing;
+}
+.detalle-lightbox__viewport.is-zoomed .detalle-lightbox__img {
+  cursor: grab;
+}
+.detalle-lightbox__viewport.is-zoomed:active .detalle-lightbox__img {
+  cursor: grabbing;
+}
+.detalle-lightbox__viewport.is-zoomed .detalle-lightbox__img {
+  max-width: none;
+  max-height: none;
+  width: 200%;
+  height: auto;
+  object-fit: initial;
 }
 .detalle-lightbox__cerrar {
   position: absolute;
-  top: 1rem;
-  right: 1rem;
+  z-index: 2;
+  top: max(1rem, env(safe-area-inset-top, 0px));
+  right: max(1rem, env(safe-area-inset-right, 0px));
   width: 48px;
   height: 48px;
   border: none;
@@ -1371,6 +1448,7 @@ input.input {
 .detalle-lightbox__prev,
 .detalle-lightbox__next {
   position: absolute;
+  z-index: 2;
   top: 50%;
   transform: translateY(-50%);
   width: 48px;
@@ -1674,6 +1752,15 @@ input.input {
 .checkbox-label a:hover {
   color: var(--dorado);
 }
+/* Enlace a política de privacidad (publicar): azul típico de hipervínculo */
+#link-politica-publicar {
+  color: #155dfc;
+  text-decoration: underline;
+}
+#link-politica-publicar:hover,
+#link-politica-publicar:focus-visible {
+  color: #0e46c8;
+}
 .form-nota {
   font-size: 0.9rem;
   color: var(--texto-sobre-fondo-muted);
@@ -1687,22 +1774,18 @@ input.input {
 @media (min-width: 600px) {
   .header {
     flex-direction: row;
-    justify-content: center;
+    justify-content: space-between;
     position: relative !important;
     flex-wrap: wrap; /* Permite que el NIT baje debajo del logo en escritorio */
     padding: 1.1rem 1.25rem 1.2rem;
+    gap: 1rem;
   }
-  /* Sin transform aquí: si un antepasado tiene transform, position:fixed del menú de idiomas
-     se ancla a ese elemento y en escritorio el desplegable queda mal / no clicable (móvil no usa este bloque). */
   .header .nav {
-    position: absolute;
-    right: 1rem;
-    top: 0;
-    bottom: 0;
+    position: static;
+    margin-left: auto;
     display: flex;
     flex-wrap: wrap;
     align-items: center;
-    align-content: center;
     justify-content: flex-end;
     gap: 0.5rem;
     z-index: 2;
